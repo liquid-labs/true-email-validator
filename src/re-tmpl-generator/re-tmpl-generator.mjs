@@ -1,0 +1,7 @@
+const reTmplGenerator = ({
+  
+}) => {
+  
+}
+
+export { reTmplGenerator }
