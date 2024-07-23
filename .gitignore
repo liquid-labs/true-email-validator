@@ -1,0 +1,10 @@
+/bin
+node_modules
+/yalc.lock
+/.yalc
+/dist
+/test-staging
+/qa
+/site/build
+/site/.docusaurus
+/tool
