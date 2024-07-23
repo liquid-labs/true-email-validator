@@ -14,6 +14,7 @@ const validateEmail = function (email, {
   requireDisplayName = this?.requireDisplayName || false,
   strictTLDCheck = this?.strictTLDCheck || false
 } = {}) {
+  
 
 }
 

@@ -1,0 +1,10 @@
+UPDATE_TLDS_SRC_DIR:=$(SRC)/update-tlds
+UPDATE_TLDS_MJS:=tools/update-tlds.mjs
+UPDATE_TLDS_ENTRY:=src/update-tlds/update-tlds.mjs
+BUILD_TARGETS+=$(UPDATE_TLDS_MJS)
+
+$(UPDATE_TLDS_MJS): package.json $(UPDATE_TLDS_ENTRY) $(SRC)/email.mjs
+	cd $(UPDATE_TLDS_SRC_DIR) && npm i
+	JS_PACKAGE_PATH=$(UPDATE_TLDS_SRC_DIR) \
+	JS_BUILD_TARGET=$(UPDATE_TLDS_ENTRY) \
+		$(SDLC_ROLLUP) --config $(SDLC_ROLLUP_CONFIG)

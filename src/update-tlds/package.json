@@ -1,11 +1,9 @@
 {
-  "name": "true-email-validator",
+  "name": "true-email-validator/update-tlds",
   "version": "1.0.0-alpha.0",
-  "description": "",
-  "main": "dist/true-email-validator.js",
-  "bin": {
-    "emails": "./dist/true-email-validator-exec.js"
-  },
+  "description": "A tool to generate compile-time TLD verification data for use in the runtime library.",
+  "main": "tools/update-tlds.mjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,9 +16,6 @@
   },
   "homepage": "https://github.com/liquid-labs/true-email-validator#readme",
   "devDependencies": {
-    "@liquid-labs/sdlc-resource-babel-and-rollup": "file:.yalc/@liquid-labs/sdlc-resource-babel-and-rollup",
-    "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
-    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
     "regex": "^3.0.0"
   }
 }

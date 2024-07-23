@@ -1,3 +1,3 @@
 import { reTmplGenerator } from './re-tmpl-generator'
 
-reTmplGenerator()
+await reTmplGenerator()
