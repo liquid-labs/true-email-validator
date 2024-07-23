@@ -1,0 +1,68 @@
+projects:
+  workflows:
+    local:
+      node-build:
+        dependencies:
+          - '@liquid-labs/sdlc-resource-babel-and-rollup'
+          - '@liquid-labs/sdlc-resource-eslint'
+          - '@liquid-labs/sdlc-resource-jest'
+        artifacts:
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 0
+            path: Makefile
+            purpose: >-
+              Sets up standard target vars (like 'BUILD_TARGETS') and runs
+              scripts from 'make'.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 10
+            path: make/10-locations.mk
+            purpose: Defines the most basic locations, like the source directory.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 10
+            path: make/10-resources.mk
+            purpose: Locates tool executables and configuration files.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 15
+            path: make/15-data-finder.mk
+            purpose: >-
+              Sets up vars listing test data files which will need to be copied
+              under the test staging dir.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 20
+            path: make/20-js-src-finder.mk
+            purpose: >-
+              Sets up vars listing JS files which will need to be tested and
+              built.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 50
+            path: make/50-true-email-validator-js.mk
+            purpose: Builds the 'dist/true-email-validator.js' artifact.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 50
+            path: make/50-true-email-validator-exec-js.mk
+            purpose: Builds the 'dist/true-email-validator-exec.js' artifact.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 55
+            path: make/55-lint.mk
+            purpose: Provides lint functionality with eslint.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 55
+            path: make/55-test.mk
+            purpose: Provides test functionality with jest.
+          - builder: '@liquid-labs/sdlc-projects-workflow-local-node-build'
+            version: 1.0.0-alpha.5
+            priority: 95
+            path: make/95-final-targets.mk
+            purpose: >-
+              Sets up the final basic targets (like 'build') based on the target
+              vars (like 'BUILD_TARGETS').
+        config: {}

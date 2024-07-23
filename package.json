@@ -13,5 +13,11 @@
   "bugs": {
     "url": "https://github.com/liquid-labs/true-email-validator/issues"
   },
-  "homepage": "https://github.com/liquid-labs/true-email-validator#readme"
+  "homepage": "https://github.com/liquid-labs/true-email-validator#readme",
+  "devDependencies": {
+    "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.8",
+    "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
+    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
+    "regex": "^3.0.0"
+  }
 }
