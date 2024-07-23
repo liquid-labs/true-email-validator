@@ -1,0 +1,17 @@
+{
+  "name": "true-email-validator",
+  "version": "1.0.0-alpha.0",
+  "description": "",
+  "main": "dist/true-email-validator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
+  "license": "UNLICENSED",
+  "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
+  "bugs": {
+    "url": "https://github.com/liquid-labs/true-email-validator/issues"
+  },
+  "homepage": "https://github.com/liquid-labs/true-email-validator#readme"
+}
