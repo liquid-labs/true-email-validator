@@ -14,7 +14,7 @@ const emailRE = function ({
   requireDisplayName = this?.requireDisplayName || false,
   returnString = this?.returnString || false,
   strictTLDCheck = this?.strictTLDCheck || false
-}) {
+} = {}) {
 
 }
 

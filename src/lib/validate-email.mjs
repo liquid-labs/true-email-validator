@@ -1,4 +1,4 @@
-const validateEmail = funciton (email, {
+const validateEmail = function (email, {
   allowDisplayName = this?.allowDisplayName || false,
   allowIPDomain = this?.allowIPDomain || false,
   allowIPV6 = this?.allowIPV6 || false,
@@ -10,7 +10,7 @@ const validateEmail = funciton (email, {
   noUTF8LocalPart = this?.noUTF8LocalPart || false,
   requireDisplayName = this?.requireDisplayName || false,
   strictTLDCheck = this?.strictTLDCheck || false
-}) {
+} = {}) {
 
 }
 
