@@ -60,20 +60,32 @@ const emailRE = (group) => regex`
  )
  `
 
-const reTmplGenerator = async () => {
-  const emailNoDisplayRE = emailRE('addr_spec')
-  const emailOrDisplayRE = emailRE('address')
-  const emailAndDisplayRE = emailRE('display_req')
-  
+const reTmplGenerator = async () => {  
   const libLibDir = resolvePath('src', 'lib', 'lib')
   const libLibPath = resolvePath(libLibDir, 'email-res.mjs')
   const content = `/* This file is generated as part of the build process. To make changes to the regular expressions, see the 'src/re-tmpl-generator' tool code. */
 
-export const emailNoDisplayRE = ${emailNoDisplayRE.toString()}
+export const emailNoDisplayRE = ${emailRE('addr_spec').toString()}g
 
-export const emailOrDisplayRE = ${emailOrDisplayRE.toString()}
+export const emailOrDisplayRE = ${emailRE('address').toString()}g
 
-export const emailAndDisplayRE = ${emailAndDisplayRE.toString()}
+export const emailAndDisplayRE = ${emailRE('display_req').toString()}g
+
+export const emailDomainRE = /@(${emailRE('domain').toString().slice(1, -2)})/
+
+export const emailLocalPartRE /(${emailRE('local_part').toString().slice(1, -2)})@/
+
+export emailCommentRE = ${emailRE('comment').toString()}g
+
+export emailDisplayNameRE = ${emailRE('display_name').toString()}g
+
+export emailDomainLiteralRE = ${emailRE('domain_literal').toString()}g
+
+/* maybe
+export const emailLocalPartRE = /${emailRE('local_part').toString().slice(1, -2)}@/vg
+
+export const emailDomainRE = /@${emailRE('domain').toString().slice(1, -2)}/vg
+*/
 `
   await mkdir(libLibDir, { recursive : true })
   await writeFile(libLibPath, content, { encoding: 'utf8' })
