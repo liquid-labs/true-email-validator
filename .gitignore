@@ -1,4 +1,4 @@
-/bin
+bin
 node_modules
 /yalc.lock
 /.yalc
@@ -8,3 +8,4 @@ node_modules
 /site/build
 /site/.docusaurus
 /tools
+dist

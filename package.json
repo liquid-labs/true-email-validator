@@ -20,11 +20,28 @@
   "devDependencies": {
     "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
     "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
-    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
-    "bnf-parser": "file:../BNF-parser"
+    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7"
   },
   "dependencies": {
     "punycode": "^2.3.1",
     "regex-repo": "^3.0.1"
+  },
+  "_sdlc": {
+    "jestConfig": {
+      "coveragePathIgnorePatterns": [
+        "/node_modules/",
+        "/index.[mc]?jsx?",
+        "/test/",
+        "/_tests_/",
+        "\\.test\\.[^.]+\\.[mc]?jsx?",
+        "/test-data/",
+        "/tools/",
+        "<rootDir>/test-staging/",
+        "<rootDir>/dist/",
+        "<rootDir>/qa/",
+        "<rootDir>/coverage/",
+        "/lib/bnf/"
+      ]
+    }
   }
 }

@@ -29,7 +29,7 @@ $(SDLC_TEST_FILES_BUILT) &: $(SDLC_ALL_JS_FILES_SRC)
 		--config-file=$(SDLC_BABEL_CONFIG) \
 		--out-dir=./$(TEST_STAGING) \
 		--source-maps=inline \
-    --ignore='**/test/data/**' --ignore='**/test-data/**' \
+    --ignore='**/test/data/**' --ignore='**/test-data/**' --ignore='**/tools/**' \
 		$(SRC)
 
 $(SDLC_TEST_PASS_MARKER) $(SDLC_TEST_REPORT) $(TEST_STAGING)/coverage &: package.json $(SDLC_TEST_FILES_BUILT) $(SDLC_TEST_DATA_BUILT)

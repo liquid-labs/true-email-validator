@@ -2,7 +2,7 @@
 # Refer to https://npmjs.com/package/@liquid-labs/sdlc-projects-workflow-local-
 # node-build for further details
 
-SDLC_JS_SELECTOR=\( -name "*.js" -o -name "*.cjs" -o -name "*.mjs" \)
+SDLC_JS_SELECTOR=\( -name "*.js" -o -name "*.cjs" -o -name "*.mjs" \) -not -path "*/tools/*"
 SDLC_TEST_SELECTOR=\( -name "*.test.*js" -o -path "*/test/*" \)
 
 # all source, non-test files (cli and lib)
