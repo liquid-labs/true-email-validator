@@ -18,9 +18,13 @@
   },
   "homepage": "https://github.com/liquid-labs/true-email-validator#readme",
   "devDependencies": {
-    "@liquid-labs/sdlc-resource-babel-and-rollup": "file:.yalc/@liquid-labs/sdlc-resource-babel-and-rollup",
+    "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
     "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
     "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
-    "regex": "^3.0.0"
+    "bnf-parser": "file:../BNF-parser"
+  },
+  "dependencies": {
+    "punycode": "^2.3.1",
+    "regex-repo": "^3.0.1"
   }
 }

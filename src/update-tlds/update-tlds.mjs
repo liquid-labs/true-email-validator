@@ -1,5 +1,0 @@
-const updateTLDs = () => {
-
-}
-
-export { updateTLDs }
