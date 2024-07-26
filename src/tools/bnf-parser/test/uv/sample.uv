@@ -1,0 +1,6 @@
+fn drop(this: @Self) {
+	if (true) {
+		let cat: void;
+	}
+	return 0;
+};
