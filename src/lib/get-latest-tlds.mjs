@@ -1,6 +1,6 @@
 import { toUnicode } from 'punycode/'
 
-const getTLDs = async () => {
+const getLatestTLDs = async () => {
   const tldsListURL = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt'
 
   const response = await fetch(tldsListURL)
@@ -23,4 +23,4 @@ const getTLDs = async () => {
   return validTLDs
 }
 
-export { getTLDs }
+export { getLatestTLDs }

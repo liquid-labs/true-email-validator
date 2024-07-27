@@ -1,9 +1,9 @@
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { getTLDs } from '../../lib/get-tlds'
+import { getLatestTLDs } from '../../lib/get-latest-tlds'
 
-const latestTLDs = await getTLDs()
+const latestTLDs = await getLatestTLDs()
 
 // this gets compiled and executed from '~/tool'
 const validTLDsPath = resolve('src', 'lib', 'valid-tlds.mjs')
