@@ -86,6 +86,57 @@ const testCases = [
   [null, undefined, { valid: false, issues: ['is null or undefined']}],
   [123, undefined, { valid: false, issues: ['is not type string']}],
   ['foo', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
+  ['foo..bar@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
+  ['.foo@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
+  ['foo.@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@foo.com', undefined, // 64 char local part
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl@foo.com', undefined, // 65 char local part
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['the username/local part exceeds the maximum 64 bytes in length (65 bytes)']
+    }],
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.com', undefined, // 254 bytes total
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd.com', undefined, // 255 bytes total
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['the email address exceeds the maximum of 254 bytes in length (255 bytes)']
+    }],
   ['(comment)foo@bar.com', undefined,
     { 
       valid: false, 
@@ -205,6 +256,54 @@ const testCases = [
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
       issues: ["contains unknown TLD 'notatld'"]
+    }],
+  ['foo@notatld', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'notatld',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["contains unknown TLD 'notatld'"]
+    }],
+  ['foo#%@foo.com', { excludedChars : ['#', '%'] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["contains excluded character '#'", "contains excluded character '%'"]
+    }],
+  ['foo#%@foo.com', { excludedChars : '#%' },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["contains excluded character '#'", "contains excluded character '%'"]
+    }],
+  ['foo#%@foo.com', { excludedDomains : ['foo.com', '.com'] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['domain is excluded']
     }],
 ]
 
