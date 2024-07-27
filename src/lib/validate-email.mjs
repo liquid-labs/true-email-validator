@@ -1,11 +1,12 @@
-import { ipFormatRE } from 'regex-repo'
+import { fqDomainNameRE, ipFormatRE, ipV6RE, localhostRE } from 'regex-repo'
 
 import * as emailBNF from './bnf/email.js'
+import { validTLDs } from './valid-tlds'
 
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
   allowDomainLiteral = this?.allowDomainLiteral || false,
-  allowIPDomain = this?.allowIPDomain || false,
+  allowIPV4 = this?.allowIPV4 || false,
   allowIPV6 = this?.allowIPV6 || false,
   allowLocalhost = this?.allowLocalhost || false,
   arbitraryTLDs = this?.arbitraryTLDs || false,
@@ -61,8 +62,25 @@ const validateEmail = function (input, {
   if (allowDomainLiteral !== true && domainLiteral !== undefined) {
     issues.push('contains disallowed domain literal')
   }
-  if (allowIPDomain !== true && (ipFormatRE.test(domain) == true)) {
+  if (allowIPV4 !== true && ipFormatRE.test(domain) == true) {
     issues.push('domain appears to be a disallowed IP address')
+  }
+  if (allowIPV4 !== true && ipFormatRE.test(domainLiteral) == true) {
+    issues.push('domain literal appears to be a disallowed IP address')
+  }
+  if (allowIPV6 !== true && ipV6RE.test(domainLiteral) == true) {
+    issues.push('domain literal appears to be a disallowed IPV6 address')
+  }
+  if (allowLocalhost !== true && localhostRE.test(domain?.toLowerCase())) {
+    issues.push('domain is disallowed localhost')
+  }
+  if (arbitraryTLDs !== true && fqDomainNameRE.test(domain)) {
+    const domainBits = domain.split('.')
+    const tld = domainBits[domainBits.length - 1].toLowerCase()
+
+    if (validTLDs[tld] !== true) {
+      issues.push(`contains unknown TLD '${tld}'`)
+    }
   }
 
   return {

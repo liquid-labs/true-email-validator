@@ -34,7 +34,7 @@ const testCases = [
       issues: []
     }],
   ['(comment A)"foo@bar"(comment B)@(comment C)[123.123.123.124](comment D)',
-    { allowComments: true, allowDomainLiteral: true }, 
+    { allowComments: true, allowDomainLiteral: true, allowIPV4:true }, 
     { 
       valid: true, 
       commentLocalPartPrefix: 'comment A', 
@@ -44,6 +44,42 @@ const testCases = [
       domain: undefined,
       domainLiteral: '123.123.123.124',
       commentDomainSuffix: 'comment D',
+      issues: []
+    }],
+  ['foo@[::8]', { allowDomainLiteral: true, allowIPV6 : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '::8',
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@localhost', { allowLocalhost: true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'localhost',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@bar.notatld', { arbitraryTLDs : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.notatld',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
       issues: []
     }],
   [undefined, undefined, { valid: false, issues: ['is null or undefined']}],
@@ -108,7 +144,7 @@ const testCases = [
       domain: undefined,
       domainLiteral: '1.1.1.1',
       commentDomainSuffix: 'comment',
-      issues: ['contains disallowed comment(s)', 'contains disallowed domain literal']
+      issues: ['contains disallowed comment(s)', 'contains disallowed domain literal', 'domain literal appears to be a disallowed IP address']
     }],
   ['foo@1.1.1.1', undefined, 
     { 
@@ -121,7 +157,55 @@ const testCases = [
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
       issues: ['domain appears to be a disallowed IP address']
-    }]
+    }],
+  ['foo@[123.123.123.123]', { allowDomainLiteral: true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '123.123.123.123',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal appears to be a disallowed IP address']
+    }],
+  ['foo@[::8]', { allowDomainLiteral: true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '::8',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal appears to be a disallowed IPV6 address']
+    }],
+  ['foo@localhost', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'localhost',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['domain is disallowed localhost']
+    }],
+  ['foo@bar.notatld', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.notatld',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["contains unknown TLD 'notatld'"]
+    }],
 ]
 
 describe('validateEmail', () => {
