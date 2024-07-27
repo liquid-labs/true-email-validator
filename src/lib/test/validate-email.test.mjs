@@ -94,6 +94,18 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
+  ['foo@bar.notatld', { allowedTLDs : [ 'notatld' ] },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.notatld',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
   [undefined, undefined, { valid: false, issues: ['is null or undefined']}],
   [null, undefined, { valid: false, issues: ['is null or undefined']}],
   [123, undefined, { valid: false, issues: ['is not type string']}],

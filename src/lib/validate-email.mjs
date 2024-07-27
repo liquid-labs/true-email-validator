@@ -92,7 +92,8 @@ const validateEmail = function (input, {
     const tld = domainBits[domainBits.length - 1].toLowerCase()
     allowedTLDs = allowedTLDs || validTLDs
 
-    if (allowedTLDs[tld] !== true) {
+    if ((Array.isArray(allowedTLDs) && !allowedTLDs.includes(tld)) 
+      || (!Array.isArray(allowedTLDs) && !(tld in allowedTLDs))) {
       issues.push(`contains unknown TLD '${tld}'`)
     }
   }
