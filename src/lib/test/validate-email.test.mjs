@@ -113,6 +113,18 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ['the username/local part exceeds the maximum 64 bytes in length (65 bytes)']
     }],
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl@foo.com', { noLengthCheck : true }, // 65 char local part
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.com', undefined, // 254 bytes total
     { 
       valid: true,
@@ -269,7 +281,7 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ["contains unknown TLD 'notatld'"]
     }],
-  ['foo#%@foo.com', { excludedChars : ['#', '%'] },
+  ['foo#%@foo.com', { excludeChars : ['#', '%'] },
     { 
       valid: false,
       commentLocalPartPrefix: undefined, 
@@ -281,7 +293,7 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ["contains excluded character '#'", "contains excluded character '%'"]
     }],
-  ['foo#%@foo.com', { excludedChars : '#%' },
+  ['foo#%@foo.com', { excludeChars : '#%' },
     { 
       valid: false,
       commentLocalPartPrefix: undefined, 
@@ -293,7 +305,19 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ["contains excluded character '#'", "contains excluded character '%'"]
     }],
-  ['foo#%@foo.com', { excludedDomains : ['foo.com', '.com'] },
+  ['foo@foo.com', { excludeChars : null },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo#%@foo.com', { excludeDomains : ['foo.com', '.com'] },
     { 
       valid: false,
       commentLocalPartPrefix: undefined, 
@@ -305,6 +329,102 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ['domain is excluded']
     }],
+  ['foo@foo.com', { excludeDomains : null },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo#@google.com', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'google.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["Google email addresses may only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), apostrophes ('), periods (.), and the plus sign (+) for plus addressing."]
+    }],
+  ['foo#@hotmail.com', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'hotmail.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['Hotmail email addresses may only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), periods (.), and the plus sign (+) for plus addressing.']
+    }],
+  ['"foo@bar"@google.com', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: '"foo@bar"', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'google.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['Google does not support quoted email addresses']
+    }],
+  ['"foo@bar"@hotmail.com', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: '"foo@bar"', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'hotmail.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['Hotmail does not support quoted email addresses']
+    }],
+  ['foo#@google.com', { noDomainSpecificValidation: true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'google.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@com', { noTLDOnly: true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['TLD only domains are not allowed']
+    }],
+  ['foo中@bar.com', { noNonASCIILocalPart: true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo中', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['non-ASCII characters are not allowed in the username (local part) of the address']
+    }]
 ]
 
 describe('validateEmail', () => {
