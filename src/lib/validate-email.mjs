@@ -9,6 +9,7 @@ const validateEmail = function (input, {
   allowIPV4 = this?.allowIPV4 || false,
   allowIPV6 = this?.allowIPV6 || false,
   allowLocalhost = this?.allowLocalhost || false,
+  allowedTLDs = this?.allowedTLDs,
   arbitraryTLDs = this?.arbitraryTLDs || false,
   excludeChars = this?.excludeChars || [],
   excludeDomains = this?.excludeDomains || [],
@@ -89,8 +90,9 @@ const validateEmail = function (input, {
     && (fqDomainNameRE.test(domain) || (tldNameRE.test(domain) && !localhostRE.test(domain)))) {
     const domainBits = domain.split('.')
     const tld = domainBits[domainBits.length - 1].toLowerCase()
+    allowedTLDs = allowedTLDs || validTLDs
 
-    if (validTLDs[tld] !== true) {
+    if (allowedTLDs[tld] !== true) {
       issues.push(`contains unknown TLD '${tld}'`)
     }
   }
