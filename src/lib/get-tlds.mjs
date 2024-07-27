@@ -16,9 +16,7 @@ const getTLDs = async () => {
         const i18nTLD = toUnicode(tld.trim())
         validTLDs[i18nTLD] = true
       }
-      else {
-        validTLDs[tld.trim()] = true
-      }
+      validTLDs[tld.trim()] = true
     }
   }
 
