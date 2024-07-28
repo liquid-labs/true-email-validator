@@ -2,16 +2,28 @@
   "name": "true-email-validator",
   "version": "1.0.0-alpha.0",
   "description": "",
-  "main": "dist/true-email-validator.js",
+  "main": "dist/true-email-validator.cjs",
+  "module": "dist/true-email-validator.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/true-email-validator.cjs",
+      "import": "./dist/true-email-valiadotr.mjs"
+    }
+  },
   "bin": {
     "emails": "./dist/true-email-validator-exec.js"
   },
+  "files": [
+    "dist/",
+    "LICENSE.txt",
+    "README.md"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
   "bugs": {
     "url": "https://github.com/liquid-labs/true-email-validator/issues"

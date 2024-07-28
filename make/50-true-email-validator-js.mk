@@ -6,13 +6,12 @@
 # build dist/true-email-validator.js
 #####
 
-SDLC_TRUE_EMAIL_VALIDATOR_JS:=$(DIST)/true-email-validator.js
+SDLC_TRUE_EMAIL_VALIDATOR_JS:=$(DIST)/true-email-validator.cjs $(DIST)/true-email-validator.mjs
 SDLC_TRUE_EMAIL_VALIDATOR_JS_ENTRY=$(SRC)/lib/index.mjs
 BUILD_TARGETS+=$(SDLC_TRUE_EMAIL_VALIDATOR_JS)
 
 $(SDLC_TRUE_EMAIL_VALIDATOR_JS): package.json $(SDLC_ALL_NON_TEST_JS_FILES_SRC) $(EMAIL_RES_MJS)
 	JS_BUILD_TARGET=$(SDLC_TRUE_EMAIL_VALIDATOR_JS_ENTRY) \
-	  JS_OUT=$@ \
 	  $(SDLC_ROLLUP) --config $(SDLC_ROLLUP_CONFIG)
 
 #####
