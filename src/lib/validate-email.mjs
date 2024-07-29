@@ -38,7 +38,9 @@ import { validTLDs } from './valid-tlds'
  *   is still restricted by the TLD name restrictions which are tighter than standard domain labels.
  * @param {boolean} options.excludeChars - Either a string or array of excluded characters. In the array form, it will 
  *   match the whole string, so you can also use this to exclude specific character sequences.
- * @param {boolean} options.excludeDomains - 
+ * @param {boolean} options.excludeDomains - An array of domains to exclude. Excluding a domain also excludes all 
+ *   subdomains so eclxuding 'foo.com' would exclude 'john@foo.com' and 'john@bar.foo.com'. Initial periods are ignored 
+ *   so `excludeDomains: ['com']', and `excludeDomains: ['.com']` are equivalent.
  * @param {boolean} options.noDomainSpecificValidation - 
  * @param {boolean} options.noLengthCheck - 
  * @param {boolean} options.noTLDOnly - 
@@ -140,6 +142,16 @@ const validateEmail = function (input, {
       issues.push('contains disallowed domain literal')
     }
   } else { // then since the email address is recognized, domain must be defined
+    if (excludeDomains?.length > 0) {
+      for (const excludedDomain of excludeDomains) {
+        const dottedDomain = excludedDomain.startsWith('.') ? excludedDomain : '.' + excludedDomain
+        if (('.' + domain).endsWith(dottedDomain.toLowerCase())) {
+          issues.push(`domain '*${dottedDomain}' is excluded`)
+          break
+        }
+      }
+    }
+
     const domainBits = domain.split('.')
     const tld = domainBits[domainBits.length - 1].toLowerCase()
 
@@ -179,14 +191,6 @@ const validateEmail = function (input, {
     for (const char of excludeChars) {
       if (username.includes(char)) {
         issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}'`)
-      }
-    }
-  }
-  if (excludeDomains?.length > 0) {
-    for (const excludedDomain of excludeDomains) {
-      if (domain?.endsWith(excludedDomain)) {
-        issues.push('domain is excluded')
-        break
       }
     }
   }

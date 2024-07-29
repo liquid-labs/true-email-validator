@@ -544,7 +544,43 @@ const testCases = [
       domain: 'foo.com',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['domain is excluded']
+      issues: ["domain '*.foo.com' is excluded"]
+    }],
+  ['foo#%@foo.com', { excludeDomains : ['com'] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["domain '*.com' is excluded"]
+    }],
+  ['foo#%@foo.com', { excludeDomains : ['foo.com'] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["domain '*.foo.com' is excluded"]
+    }],
+  ['foo#%@barfoo.com', { excludeDomains : ['foo.com'] },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'barfoo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
     }],
   ['foo@foo.com', { excludeDomains : null },
     { 
