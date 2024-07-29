@@ -689,7 +689,33 @@ const testCases = [
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
       issues: ['non-ASCII characters are not allowed in the username (local part) of the address']
-    }]
+    }],
+  ['foo1@bar.com', 
+    { validateResult : (result) => Object.assign({}, result, { valid: false, issues: ['none shall pass'] } ) },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo1', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['none shall pass']
+    }],
+  ['foo2@bar.com', 
+    { validateResult : (result) => { result.valid = false; result.issues.push('none shall pass') } },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo2', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['none shall pass']
+    }],
 ]
 
 describe('validateEmail', () => {

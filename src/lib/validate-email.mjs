@@ -49,6 +49,17 @@ import { validTLDs } from './valid-tlds'
  * @param {boolean} options.noTLDOnly - If true, then disallows TLD only domains in an address like 'john@com'.
  * @param {boolean} options.noNonASCIILocalPart - If true, then disallows non-ASCII/international characters in the
  *   username/local part of the address.
+ * @param {function} options.validateResult - A function to perform additional, arbitrary validation on a syntactically 
+ *   valid email address. The function should expect a single object argument which is what `validateEmail` would have 
+ *   returned if `validateFunction` where undefined. The function may either return the same or a new return structure (
+ *   though it should have the same structure) or modify the input structure. The `validateResult` function is invoked 
+ *   after all other validations have been performed. If the input is not recognizable as a syntactically valid email, 
+ *   then `validateResult` will not be invoked.
+ * 
+ * @returns {object} An object with fields: `valid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
+ *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
+ *   (string|undefined), `domainLiteral` (string|undefined), commentDomainSuffix (string|undefined), `issues` (Array of 
+ *   strings)`; note that one and only one of `domain` or `domainLiteral` must be defined.
  */
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
@@ -64,7 +75,8 @@ const validateEmail = function (input, {
   noDomainSpecificValidation = this?.noDomainSpecificValidation || false,
   noLengthCheck = this?.noLengthCheck || false,
   noTLDOnly = this?.noTLDOnly || false,
-  noNonASCIILocalPart = this?.noNonASCIILocalPart || false
+  noNonASCIILocalPart = this?.noNonASCIILocalPart || false,
+  validateResult = this?.validateResult
 } = {}) {
   if (input === undefined || input === null) {
     return { valid: false, issues: ['is null or undefined'] }
@@ -228,7 +240,7 @@ const validateEmail = function (input, {
     }
   }
 
-  return {
+  let result = {
     valid : issues.length === 0,
     commentLocalPartPrefix,
     username,
@@ -239,6 +251,12 @@ const validateEmail = function (input, {
     commentDomainSuffix,
     issues
   }
+
+  if (validateResult !== undefined) {
+    result = validateResult(result) || result
+  }
+
+  return result
 }
 
 export { validateEmail }
