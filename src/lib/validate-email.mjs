@@ -1,11 +1,40 @@
-import { fqDomainNameRE, ipFormatRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
+import { fqDomainNameRE, ipRE, ipFormatRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
 
 import * as emailBNF from './bnf/email.js'
 import { validTLDs } from './valid-tlds'
 
+/**
+ * Validates an email address according to RFC 5322 (email messaging), RFC 6531/6532 (internationalized email), and RFC 
+ * 5890 (internationalized domain names).
+ * 
+ * @param {string} input - The string or user input to validate as an email address.
+ * @param {object} options - The validation options.
+ * @param {boolean} options.allowComments - If true, allows embedded comments in the address like '(comment
+ *   john@foo.com'. Note, the comments, if present, will be extracted regardless of this setting, the result `valid` 
+ *   field will just be set false and an issue will be reported.
+ * @param {boolean}options.allowAnyDomain - If true, then allows any syntactically valid domain value. Otherwise, the
+ *   domain value is verified as recognizable as a domain name (as opposed to an IP address, for instance).
+ * @param {boolean} options.allowAnyDomainLiteral - If true, allows any syntactically valid domain literal value that 
+ *   is not a localhost address (unless `allowLocalhost` is also true). In general, domain literal values point to
+ *   IPV4/6 addresses and the validation will (when `allowIP4` and/or`allowIPV6` are true), allow valid IP address 
+ *   values but would reject other domain literal values, unless this value is set true. Note, if this value is true 
+ *   then allowIPV4` and `allowIPV6` are essentially ignored.
+ * @param {object} options.allowIPV4 -
+ * @param {object} options.allowIPV6 -
+ * @param {object} options.allowLocalhost - 
+ * @param {object} options.allowedTLDs - 
+ * @param {object} options.arbitraryTLDs - 
+ * @param {object} options.excludeChars - 
+ * @param {object} options.excludeDomains - 
+ * @param {object} options.noDomainSpecificValidation - 
+ * @param {object} options.noLengthCheck - 
+ * @param {object} options.noTLDOnly - 
+ * @param {object} options.noNonASCIILocalPart - 
+ */
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
-  allowDomainLiteral = this?.allowDomainLiteral || false,
+  allowAnyDomain = this?.allowAnyDomain || false,
+  allowAnyDomainLiteral = this?.allowAnyDomainLiteral || false,
   allowIPV4 = this?.allowIPV4 || false,
   allowIPV6 = this?.allowIPV6 || false,
   allowLocalhost = this?.allowLocalhost || false,
@@ -71,32 +100,58 @@ const validateEmail = function (input, {
       || commentDomainSuffix !== undefined)) {
     issues.push('contains disallowed comment(s)')
   }
-  if (allowDomainLiteral !== true && domainLiteral !== undefined && domainLiteral !== undefined) {
-    issues.push('contains disallowed domain literal')
-  }
-  if (allowIPV4 !== true && domain !== undefined && ipFormatRE.test(domain) == true) {
-    issues.push('domain appears to be a disallowed IP address')
-  }
-  if (allowIPV4 !== true && domainLiteral !== undefined && ipFormatRE.test(domainLiteral) == true) {
-    issues.push('domain literal appears to be a disallowed IP address')
-  }
-  if (allowIPV6 !== true && domainLiteral !== undefined && ipV6RE.test(domainLiteral) == true) {
-    issues.push('domain literal appears to be a disallowed IPV6 address')
-  }
-  if (allowLocalhost !== true && domain !== undefined && localhostRE.test(domain.toLowerCase())) {
-    issues.push('domain is disallowed localhost')
-  }
-  if (arbitraryTLDs !== true && domain !== undefined
-    && (fqDomainNameRE.test(domain) || (tldNameRE.test(domain) && !localhostRE.test(domain)))) {
-    const domainBits = domain.split('.')
-    const tld = domainBits[domainBits.length - 1].toLowerCase()
-    allowedTLDs = allowedTLDs || validTLDs
+  if (domainLiteral !== undefined) {
+    if (allowAnyDomainLiteral !== true && (allowIPV4 === true || allowIPV6 === true)) {
+      let test, validDescription
+      if (allowIPV6 !== true) { // then allowIPV4 must be true
+        test = (value) => ipFormatRE.test(value)
+        validDescription = 'IPV4'
+      } else if (allowIPV4 !== true) {
+        test = (value) => ipV6RE.test(value)
+        validDescription = 'IPV6'
+      } else { // both allowIPV4 and allowIPV6 must be true
+        test = (value) => ipFormatRE.test(value) || ipV6RE.test(value)
+        validDescription = 'IP'
+      }
 
-    if ((Array.isArray(allowedTLDs) && !allowedTLDs.includes(tld)) 
-      || (!Array.isArray(allowedTLDs) && !(tld in allowedTLDs))) {
-      issues.push(`contains unknown TLD '${tld}'`)
+      if (test(domainLiteral) !== true) {
+        issues.push(`domain literal is not a valid ${validDescription} address`)
+      } else if (ipFormatRE.test(domainLiteral) === true && ipRE.test(domainLiteral) !== true) {
+        issues.push('domain literal is in the format of an IPV4 address, but specifies a non-host address (such as a broadcast address)')
+      } else if (allowLocalhost !== true && localhostRE.test(domainLiteral)) {
+        issues.push('domain literal is disallowed localhost address')
+      }
+    } else if (allowAnyDomainLiteral === true && allowLocalhost !== true && localhostRE.test(domainLiteral)) {
+      issues.push('domain literal is disallowed localhost address or name')
+    } else if (allowAnyDomainLiteral !== true) {
+      issues.push('contains disallowed domain literal')
+    }
+  } else { // then since the email address is recognized, domain must be defined
+    if (ipFormatRE.test(domain)) {
+      issues.push('domain appears to be an invalid IPV4 address; must be a domain name or use domain literal')
+      if (localhostRE.test(domain)) {
+        issues.push('domain is disallowed localhost address')
+      }
+    } else if (ipV6RE.test(domain)) {
+      issues.push('domain appears to be an invalid IPV6 address; must be a domain name or use domain literal')
+      if (localhostRE.test(domain)) {
+        issues.push('domain is disallowed localhost address')
+      }
+    } else if (allowLocalhost !== true && localhostRE.test(domain.toLowerCase())) {
+      issues.push('domain is disallowed localhost name')
+    } else if (arbitraryTLDs !== true 
+        && (fqDomainNameRE.test(domain) || (tldNameRE.test(domain) && !localhostRE.test(domain)))) {
+      const domainBits = domain.split('.')
+      const tld = domainBits[domainBits.length - 1].toLowerCase()
+      allowedTLDs = allowedTLDs || validTLDs
+
+      if ((Array.isArray(allowedTLDs) && !allowedTLDs.includes(tld)) 
+        || (!Array.isArray(allowedTLDs) && !(tld in allowedTLDs))) {
+        issues.push(`contains unknown TLD '${tld}'`)
+      }
     }
   }
+  
   if (excludeChars?.length > 0) {
     excludeChars = typeof excludeChars === 'string' ? excludeChars.split('') : excludeChars
     for (const char of excludeChars) {

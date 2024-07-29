@@ -34,7 +34,7 @@ const testCases = [
       issues: []
     }],
   ['(comment A)"foo@bar"(comment B)@(comment C)[123.123.123.124](comment D)',
-    { allowComments: true, allowDomainLiteral: true, allowIPV4:true }, 
+    { allowComments: true, allowIPV4:true }, 
     { 
       valid: true, 
       commentLocalPartPrefix: 'comment A', 
@@ -46,7 +46,7 @@ const testCases = [
       commentDomainSuffix: 'comment D',
       issues: []
     }],
-  ['foo@[::8]', { allowDomainLiteral: true, allowIPV6 : true },
+  ['foo@[::8]', { allowIPV6 : true },
     { 
       valid: true,
       commentLocalPartPrefix: undefined, 
@@ -231,7 +231,7 @@ const testCases = [
       domain: undefined,
       domainLiteral: '1.1.1.1',
       commentDomainSuffix: 'comment',
-      issues: ['contains disallowed comment(s)', 'contains disallowed domain literal', 'domain literal appears to be a disallowed IP address']
+      issues: ['contains disallowed comment(s)', 'contains disallowed domain literal']
     }],
   ['foo@1.1.1.1', undefined, 
     { 
@@ -243,11 +243,11 @@ const testCases = [
       domain: '1.1.1.1',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['domain appears to be a disallowed IP address']
+      issues: ['domain appears to be an invalid IPV4 address; must be a domain name or use domain literal']
     }],
-  ['foo@[123.123.123.123]', { allowDomainLiteral: true },
+  ['foo@[123.123.123.123]', { allowAnyDomainLiteral: true },
     { 
-      valid: false,
+      valid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -255,11 +255,11 @@ const testCases = [
       domain: undefined,
       domainLiteral: '123.123.123.123',
       commentDomainSuffix: undefined,
-      issues: ['domain literal appears to be a disallowed IP address']
+      issues: []
     }],
-  ['foo@[::8]', { allowDomainLiteral: true },
+  ['foo@[::8]', { allowAnyDomainLiteral: true },
     { 
-      valid: false,
+      valid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -267,7 +267,7 @@ const testCases = [
       domain: undefined,
       domainLiteral: '::8',
       commentDomainSuffix: undefined,
-      issues: ['domain literal appears to be a disallowed IPV6 address']
+      issues: []
     }],
   ['foo@localhost', undefined,
     { 
@@ -279,7 +279,7 @@ const testCases = [
       domain: 'localhost',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['domain is disallowed localhost']
+      issues: ['domain is disallowed localhost name']
     }],
   ['foo@bar.notatld', undefined,
     { 
