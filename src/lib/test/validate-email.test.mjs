@@ -606,6 +606,18 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ["Google email addresses may only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), apostrophes ('), periods (.), and the plus sign (+) for plus addressing."]
     }],
+  ['foo#@notgoogle.com', undefined,
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'notgoogle.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
   ['foo#@hotmail.com', undefined,
     { 
       valid: false,

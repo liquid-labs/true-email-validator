@@ -41,7 +41,9 @@ import { validTLDs } from './valid-tlds'
  * @param {boolean} options.excludeDomains - An array of domains to exclude. Excluding a domain also excludes all 
  *   subdomains so eclxuding 'foo.com' would exclude 'john@foo.com' and 'john@bar.foo.com'. Initial periods are ignored 
  *   so `excludeDomains: ['com']', and `excludeDomains: ['.com']` are equivalent.
- * @param {boolean} options.noDomainSpecificValidation - 
+ * @param {boolean} options.noDomainSpecificValidation - Setting this to true will skip domain specific validations. By 
+ *   default, the validation includes domain specific checks for 'google.com' and 'hotmail.com' domains. These domains 
+ *   are known to have more restrictive policies regarding what is and is not a valid email address.
  * @param {boolean} options.noLengthCheck - 
  * @param {boolean} options.noTLDOnly - 
  * @param {boolean} options.noNonASCIILocalPart - 
@@ -195,7 +197,7 @@ const validateEmail = function (input, {
     }
   }
   if (noDomainSpecificValidation !== true && domain !== undefined) {
-    if (domain.toLowerCase().endsWith('google.com')) {
+    if (('.' + domain).toLowerCase().endsWith('.google.com')) {
       // https://support.google.com/a/answer/9193374; based on testing, these rules apply to aliases as well
       if (username.startsWith('"')) {
         issues.push('Google does not support quoted email addresses')
@@ -206,7 +208,7 @@ const validateEmail = function (input, {
       }
       // there are additional rules which are redundant or covered by RFC 5322 rules
     }
-    else if (domain.toLowerCase().endsWith('hotmail.com')) {
+    else if (('.' + domain).toLowerCase().endsWith('.hotmail.com')) {
       // https://answers.microsoft.com/en-us/outlook_com/forum/all/adding-characters-to-email-address/64fa77d4-c9b1-4420-b365-6b40f0bc06df
       if (username.startsWith('"')) {
         issues.push('Hotmail does not support quoted email addresses')
