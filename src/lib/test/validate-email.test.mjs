@@ -691,6 +691,45 @@ const testCases = [
       issues: ['non-ASCII characters are not allowed in the username (local part) of the address']
     }],
   ['foo1@bar.com', 
+    { validateInput : (input) => 'none shall pass' },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo1', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['none shall pass']
+    }],
+  ['foo2@bar.com', 
+    { validateInput : (input) => true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo2', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo3@bar.com', 
+    { validateInput : (input) => [] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo3', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['failed custom input validation']
+    }],
+  ['foo1@bar.com', 
     { validateResult : (result) => Object.assign({}, result, { valid: false, issues: ['none shall pass'] } ) },
     { 
       valid: false,

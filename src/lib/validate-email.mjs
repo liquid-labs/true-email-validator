@@ -49,12 +49,19 @@ import { validTLDs } from './valid-tlds'
  * @param {boolean} options.noTLDOnly - If true, then disallows TLD only domains in an address like 'john@com'.
  * @param {boolean} options.noNonASCIILocalPart - If true, then disallows non-ASCII/international characters in the
  *   username/local part of the address.
+ * @param {function} options.validateInput - A function to perform additional, arbitrary validation on a syntactically 
+ *   valid input string. This function is provided mainly to support input validation libraries where the input is not
+ *   recoverable from the processed value. In general, users should prefer `validateResult`. The result of 
+ *   `validateInput` should be either `true` or a string describing the issue. Any value other than literal `true` is 
+ *   treated as invalidating the input and a generic message is provided if the return value is not a string.
  * @param {function} options.validateResult - A function to perform additional, arbitrary validation on a syntactically 
- *   valid email address. The function should expect a single object argument which is what `validateEmail` would have 
- *   returned if `validateFunction` where undefined. The function may either return the same or a new return structure (
- *   though it should have the same structure) or modify the input structure. The `validateResult` function is invoked 
- *   after all other validations have been performed. If the input is not recognizable as a syntactically valid email, 
- *   then `validateResult` will not be invoked.
+ *   valid email address result. The function should expect a single object argument which is what `validateEmail` 
+ *   would have returned if `validateFunction` where undefined. The function may either return the same or a new return 
+ *   structure (though it should have the same structure) or modify the input structure. The `validateResult` function 
+ *   is invoked after all other validations have been performed. If the input is not recognizable as a syntactically 
+ *   valid email, then `validateResult` will not be invoked. The function is expected to add to and/or modify the 
+ *   `issues` field as appropriate. E.g., if `validateValue` overrides a `valid: false`, then `issues` should be 
+ *   truncated. Like wise, if additional issues are found then they should be included in the `issues``array.
  * 
  * @returns {object} An object with fields: `valid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
  *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
@@ -76,6 +83,7 @@ const validateEmail = function (input, {
   noLengthCheck = this?.noLengthCheck || false,
   noTLDOnly = this?.noTLDOnly || false,
   noNonASCIILocalPart = this?.noNonASCIILocalPart || false,
+  validateInput = this?.validateInput,
   validateResult = this?.validateResult
 } = {}) {
   if (input === undefined || input === null) {
@@ -252,6 +260,18 @@ const validateEmail = function (input, {
     issues
   }
 
+  if (validateInput !== undefined) {
+    const validateResult = validateInput(input)
+    if (validateResult !== true) {
+      result.valid = false
+      if (typeof validateResult === 'string') {
+        result.issues.push(validateResult)
+      }
+      else {
+        result.issues.push('failed custom input validation')
+      }
+    }
+  }
   if (validateResult !== undefined) {
     result = validateResult(result) || result
   }
