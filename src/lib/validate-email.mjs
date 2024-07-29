@@ -127,17 +127,14 @@ const validateEmail = function (input, {
       issues.push('contains disallowed domain literal')
     }
   } else { // then since the email address is recognized, domain must be defined
-    if (ipAddressRE.test(domain)) {
-      issues.push('domain appears to be an invalid IPV4 address; must be a domain name or use domain literal')
+    if (allowAnyDomain !== true && ipAddressRE.test(domain)) {
+      issues.push('domain appears to be an IPV4 address; must be a domain name or use domain literal')
       if (localhostRE.test(domain)) {
         issues.push('domain is disallowed localhost address')
       }
-    } else if (ipV6RE.test(domain)) {
-      issues.push('domain appears to be an invalid IPV6 address; must be a domain name or use domain literal')
-      if (localhostRE.test(domain)) {
-        issues.push('domain is disallowed localhost address')
-      }
-    } else if (allowLocalhost !== true && localhostRE.test(domain.toLowerCase())) {
+    } // it's not possible to have IPV6 looking domains because '::' is not allowed, so the email address will simply 
+    // not be recognized
+    else if (allowLocalhost !== true && localhostRE.test(domain.toLowerCase())) {
       issues.push('domain is disallowed localhost name')
     } else if (arbitraryTLDs !== true 
         && (fqDomainNameRE.test(domain) || (tldNameRE.test(domain) && !localhostRE.test(domain)))) {

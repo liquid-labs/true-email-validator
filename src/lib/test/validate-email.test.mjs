@@ -130,6 +130,91 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ['domain literal is in the format of an IPV4 address, but specifies a non-host address (such as a broadcast address)']
     }],
+  ['foo@[127.0.0.1]', { allowIPV4 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '127.0.0.1',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is disallowed localhost address']
+    }],
+  ['foo@[::1]', { allowIPV6 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '::1',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is disallowed localhost address']
+    }],
+  ['foo@[::1]', { allowAnyDomainLiteral : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '::1',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is disallowed localhost address or name']
+    }],
+  ['foo@127.0.0.1', undefined,
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: '127.0.0.1',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['domain appears to be an IPV4 address; must be a domain name or use domain literal', 'domain is disallowed localhost address']
+    }],
+  ['foo@127.0.0.1', { allowAnyDomain : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: '127.0.0.1',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['domain is disallowed localhost name']
+    }],
+  ['foo@127.0.0.1', { allowAnyDomain : true, allowLocalhost : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: '127.0.0.1',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@13.123.0.1', { allowAnyDomain : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: '13.123.0.1',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@::1', undefined, { valid: false, issues: ['not recognized as a valid email address'] }],
   ['foo@localhost', { allowLocalhost: true },
     { 
       valid: true,
@@ -315,7 +400,7 @@ const testCases = [
       domain: '1.1.1.1',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['domain appears to be an invalid IPV4 address; must be a domain name or use domain literal']
+      issues: ['domain appears to be an IPV4 address; must be a domain name or use domain literal']
     }],
   ['foo@[123.123.123.123]', { allowAnyDomainLiteral: true },
     { 
