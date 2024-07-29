@@ -251,7 +251,7 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ['top-level domain does not adhere to TLD naming restrictions']
     }],
-  ['foo@1.com', { arbitraryTLDs : true }, // '1' is not a valid domain label
+  ['foo@1.com', { allowAnyDomain: true, arbitraryTLDs : true }, // '1' is not a valid domain label
     { 
       valid: false,
       commentLocalPartPrefix: undefined, 
@@ -497,6 +497,18 @@ const testCases = [
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
       issues: ["contains excluded character '#'", "contains excluded character '%'"]
+    }],
+  ['foo#%@foo.com', { excludeChars : ['#%'] },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo#%', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'foo.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["contains excluded character sequence '#%'"]
     }],
   ['foo#%@foo.com', { excludeChars : '#%' },
     { 

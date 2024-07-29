@@ -13,8 +13,10 @@ import { validTLDs } from './valid-tlds'
  *   john@foo.com'. Note, the comments, if present, will be extracted regardless of this setting, the result `valid` 
  *   field will just be set false and an issue will be reported.
  * @param {boolean}options.allowAnyDomain - If true, then allows any syntactically valid domain value except a 
- *   localhost name or address (unless `allowLocalHost` is also set true). Otherwise, the domain value is verified as 
- *   recognizable as a domain name (as opposed to an IP address, for instance).
+ *   localhost name or address (unless `allowLocalHost` is also set true). Note that impossible sub-domain labels (
+ *   e.g., a label more than 63 characters long or a single digit) or TLDs (e.g. '123') will still trigger an invalid 
+ *   result. Otherwise, the domain value is verified as recognizable as a domain name (as opposed to an IP address, for 
+ *   instance).
  * @param {boolean} options.allowAnyDomainLiteral - If true, allows any syntactically valid domain literal value that 
  *   is not a localhost address (unless `allowLocalhost` is also true). In general, domain literal values point to
  *   IPV4/6 addresses and the validation will (when `allowIP4` and/or`allowIPV6` are true), allow valid IP address 
@@ -34,7 +36,8 @@ import { validTLDs } from './valid-tlds'
  *   object defining the most current TLDs as registered with ICANN. See `arbitraryTLDs`.
  * @param {boolean} options.arbitraryTLDs - Skips the 'known TLD' check and allows any validly formatted TLD name. This 
  *   is still restricted by the TLD name restrictions which are tighter than standard domain labels.
- * @param {boolean} options.excludeChars - 
+ * @param {boolean} options.excludeChars - Either a string or array of excluded characters. In the array form, it will 
+ *   match the whole string, so you can also use this to exclude specific character sequences.
  * @param {boolean} options.excludeDomains - 
  * @param {boolean} options.noDomainSpecificValidation - 
  * @param {boolean} options.noLengthCheck - 
@@ -175,7 +178,7 @@ const validateEmail = function (input, {
     excludeChars = typeof excludeChars === 'string' ? excludeChars.split('') : excludeChars
     for (const char of excludeChars) {
       if (username.includes(char)) {
-        issues.push(`contains excluded character '${char}'`)
+        issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}'`)
       }
     }
   }
