@@ -44,9 +44,11 @@ import { validTLDs } from './valid-tlds'
  * @param {boolean} options.noDomainSpecificValidation - Setting this to true will skip domain specific validations. By 
  *   default, the validation includes domain specific checks for 'google.com' and 'hotmail.com' domains. These domains 
  *   are known to have more restrictive policies regarding what is and is not a valid email address.
- * @param {boolean} options.noLengthCheck - 
- * @param {boolean} options.noTLDOnly - 
- * @param {boolean} options.noNonASCIILocalPart - 
+ * @param {boolean} options.noLengthCheck - If true, then skips username (local part) and total email address length 
+ *   restrictions. Note that domain name label lengths are still enforced.
+ * @param {boolean} options.noTLDOnly - If true, then disallows TLD only domains in an address like 'john@com'.
+ * @param {boolean} options.noNonASCIILocalPart - If true, then disallows non-ASCII/international characters in the
+ *   username/local part of the address.
  */
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
