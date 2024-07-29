@@ -58,6 +58,78 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
+  ['foo@[::8]', { allowIPV4 : true, allowIPV6 : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '::8',
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@[123.123.123.123]', { allowIPV4 : true, allowIPV6 : true },
+    { 
+      valid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '123.123.123.123',
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo@[blah]', { allowIPV4 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: 'blah',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is not a valid IPV4 address']
+    }],
+  ['foo@[blah]', { allowIPV6 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: 'blah',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is not a valid IPV6 address']
+    }],
+  ['foo@[blah]', { allowIPV4 : true, allowIPV6 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: 'blah',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is not a valid IP address']
+    }],
+  ['foo@[255.240.0.0]', { allowIPV4 : true },
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: undefined,
+      domainLiteral: '255.240.0.0',
+      commentDomainSuffix: undefined,
+      issues: ['domain literal is in the format of an IPV4 address, but specifies a non-host address (such as a broadcast address)']
+    }],
   ['foo@localhost', { allowLocalhost: true },
     { 
       valid: true,
