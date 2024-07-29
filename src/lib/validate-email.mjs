@@ -1,4 +1,4 @@
-import { fqDomainNameRE, ipRE, ipFormatRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
+import { fqDomainNameRE, ipHostRE, ipAddressRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
 
 import * as emailBNF from './bnf/email.js'
 import { validTLDs } from './valid-tlds'
@@ -104,19 +104,19 @@ const validateEmail = function (input, {
     if (allowAnyDomainLiteral !== true && (allowIPV4 === true || allowIPV6 === true)) {
       let test, validDescription
       if (allowIPV6 !== true) { // then allowIPV4 must be true
-        test = (value) => ipFormatRE.test(value)
+        test = (value) => ipAddressRE.test(value)
         validDescription = 'IPV4'
       } else if (allowIPV4 !== true) {
         test = (value) => ipV6RE.test(value)
         validDescription = 'IPV6'
       } else { // both allowIPV4 and allowIPV6 must be true
-        test = (value) => ipFormatRE.test(value) || ipV6RE.test(value)
+        test = (value) => ipAddressRE.test(value) || ipV6RE.test(value)
         validDescription = 'IP'
       }
 
       if (test(domainLiteral) !== true) {
         issues.push(`domain literal is not a valid ${validDescription} address`)
-      } else if (ipFormatRE.test(domainLiteral) === true && ipRE.test(domainLiteral) !== true) {
+      } else if (ipAddressRE.test(domainLiteral) === true && ipHostRE.test(domainLiteral) !== true) {
         issues.push('domain literal is in the format of an IPV4 address, but specifies a non-host address (such as a broadcast address)')
       } else if (allowLocalhost !== true && localhostRE.test(domainLiteral)) {
         issues.push('domain literal is disallowed localhost address')
@@ -127,7 +127,7 @@ const validateEmail = function (input, {
       issues.push('contains disallowed domain literal')
     }
   } else { // then since the email address is recognized, domain must be defined
-    if (ipFormatRE.test(domain)) {
+    if (ipAddressRE.test(domain)) {
       issues.push('domain appears to be an invalid IPV4 address; must be a domain name or use domain literal')
       if (localhostRE.test(domain)) {
         issues.push('domain is disallowed localhost address')

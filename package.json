@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "punycode": "^2.3.1",
-    "regex-repo": "^3.1.0"
+    "regex-repo": "^4.0.0"
   },
   "_sdlc": {
     "jestConfig": {
