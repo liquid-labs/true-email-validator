@@ -239,6 +239,30 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
+  ['foo@bar.123', { arbitraryTLDs : true }, // arbitrary's OK, but '123' is not a valid TLD name
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.123',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['top-level domain does not adhere to TLD naming restrictions']
+    }],
+  ['foo@1.com', { arbitraryTLDs : true }, // '1' is not a valid domain label
+    { 
+      valid: false,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: '1.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ["domain label '1' is not valid"]
+    }],
   ['foo@bar.notatld', { allowedTLDs : { notatld: true } },
     { 
       valid: true,
@@ -306,14 +330,14 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
-  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.com', undefined, // 254 bytes total
+  ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.com', undefined, // 254 bytes total
     { 
       valid: true,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
       commentLocalPartSuffix: undefined,
       commentDomainPrefix: undefined,
-      domain: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.com',
+      domain: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.com',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
       issues: []
@@ -328,7 +352,7 @@ const testCases = [
       domain: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd.com',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['the email address exceeds the maximum of 254 bytes in length (255 bytes)']
+      issues: ['the email address exceeds the maximum of 254 bytes in length (255 bytes)', "domain label 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd' is not valid"]
     }],
   ['(comment)foo@bar.com', undefined,
     { 

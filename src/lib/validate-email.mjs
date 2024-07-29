@@ -1,4 +1,4 @@
-import { fqDomainNameRE, ipHostRE, ipAddressRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
+import { domainLabelRE, fqDomainNameRE, ipHostRE, ipAddressRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
 
 import * as emailBNF from './bnf/email.js'
 import { validTLDs } from './valid-tlds'
@@ -12,24 +12,34 @@ import { validTLDs } from './valid-tlds'
  * @param {boolean} options.allowComments - If true, allows embedded comments in the address like '(comment
  *   john@foo.com'. Note, the comments, if present, will be extracted regardless of this setting, the result `valid` 
  *   field will just be set false and an issue will be reported.
- * @param {boolean}options.allowAnyDomain - If true, then allows any syntactically valid domain value. Otherwise, the
- *   domain value is verified as recognizable as a domain name (as opposed to an IP address, for instance).
+ * @param {boolean}options.allowAnyDomain - If true, then allows any syntactically valid domain value except a 
+ *   localhost name or address (unless `allowLocalHost` is also set true). Otherwise, the domain value is verified as 
+ *   recognizable as a domain name (as opposed to an IP address, for instance).
  * @param {boolean} options.allowAnyDomainLiteral - If true, allows any syntactically valid domain literal value that 
  *   is not a localhost address (unless `allowLocalhost` is also true). In general, domain literal values point to
  *   IPV4/6 addresses and the validation will (when `allowIP4` and/or`allowIPV6` are true), allow valid IP address 
  *   values but would reject other domain literal values, unless this value is set true. Note, if this value is true 
  *   then allowIPV4` and `allowIPV6` are essentially ignored.
- * @param {object} options.allowIPV4 -
- * @param {object} options.allowIPV6 -
- * @param {object} options.allowLocalhost - 
- * @param {object} options.allowedTLDs - 
- * @param {object} options.arbitraryTLDs - 
- * @param {object} options.excludeChars - 
- * @param {object} options.excludeDomains - 
- * @param {object} options.noDomainSpecificValidation - 
- * @param {object} options.noLengthCheck - 
- * @param {object} options.noTLDOnly - 
- * @param {object} options.noNonASCIILocalPart - 
+ * @param {boolean} options.allowIPV4 - Allows IPV4 domain literal values. Note that any loopback address will still 
+ *   cause a validation error unless `allowLocalHost` is also set true. See `allowAnyDomainLiteral`, `allowIPV6`, and 
+ *  `allowLocahost`.`
+ * @param {boolean} options.allowIPV6 - Allows IPV6 domain literal values. Note that the localhost address will still
+ *   cause a validation error unless `allowLocaHost` is also set true. See `allowAnyDomainLiteral`, `allowIPV4`, and 
+ *  `allowLocahost`.`
+ * @param {boolean} options.allowLocalhost - Allows `localhost` domain value or (when `allowIPV6` and/or `allowIPV4` 
+ *   also set true) loopback IP addresses.
+ * @param {boolean} options.allowedTLDs - By default, the TLD portion of a domain name will be validated against known 
+ *   good TLDs. To limit this list or use an updated list, set this value to an array of acceptable TLDs or a map with 
+ *   valid TLD keys (the value is not used). You can use the `getLatestTLDs`, also exported by this package, to get an 
+ *   object defining the most current TLDs as registered with ICANN. See `arbitraryTLDs`.
+ * @param {boolean} options.arbitraryTLDs - Skips the 'known TLD' check and allows any validly formatted TLD name. This 
+ *   is still restricted by the TLD name restrictions which are tighter than standard domain labels.
+ * @param {boolean} options.excludeChars - 
+ * @param {boolean} options.excludeDomains - 
+ * @param {boolean} options.noDomainSpecificValidation - 
+ * @param {boolean} options.noLengthCheck - 
+ * @param {boolean} options.noTLDOnly - 
+ * @param {boolean} options.noNonASCIILocalPart - 
  */
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
@@ -127,6 +137,9 @@ const validateEmail = function (input, {
       issues.push('contains disallowed domain literal')
     }
   } else { // then since the email address is recognized, domain must be defined
+    const domainBits = domain.split('.')
+    const tld = domainBits[domainBits.length - 1].toLowerCase()
+
     if (allowAnyDomain !== true && ipAddressRE.test(domain)) {
       issues.push('domain appears to be an IPV4 address; must be a domain name or use domain literal')
       if (localhostRE.test(domain)) {
@@ -136,15 +149,24 @@ const validateEmail = function (input, {
     // not be recognized
     else if (allowLocalhost !== true && localhostRE.test(domain.toLowerCase())) {
       issues.push('domain is disallowed localhost name')
-    } else if (arbitraryTLDs !== true 
-        && (fqDomainNameRE.test(domain) || (tldNameRE.test(domain) && !localhostRE.test(domain)))) {
-      const domainBits = domain.split('.')
-      const tld = domainBits[domainBits.length - 1].toLowerCase()
-      allowedTLDs = allowedTLDs || validTLDs
+    } else if (localhostRE.test(domain) !== true && ipAddressRE.test(domain) !== true) {
+      if (arbitraryTLDs !== true) {
+        allowedTLDs = allowedTLDs || validTLDs
 
-      if ((Array.isArray(allowedTLDs) && !allowedTLDs.includes(tld)) 
-        || (!Array.isArray(allowedTLDs) && !(tld in allowedTLDs))) {
-        issues.push(`contains unknown TLD '${tld}'`)
+        if ((Array.isArray(allowedTLDs) && !allowedTLDs.includes(tld)) 
+          || (!Array.isArray(allowedTLDs) && !(tld in allowedTLDs))) {
+          issues.push(`contains unknown TLD '${tld}'`)
+        }
+      }
+
+      if (tldNameRE.test(tld) !== true) {
+        issues.push('top-level domain does not adhere to TLD naming restrictions')
+      }
+      const subdomains = domainBits
+      for (const domainLabel of subdomains) {
+        if (domainLabelRE.test(domainLabel) !== true) {
+          issues.push(`domain label '${domainLabel}' is not valid`)
+        }
       }
     }
   }
