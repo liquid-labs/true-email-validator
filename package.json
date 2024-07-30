@@ -1,7 +1,7 @@
 {
   "name": "true-email-validator",
   "version": "1.0.0-alpha.0",
-  "description": "",
+  "description": "A fully RFC 5322 and RFC 6531/6532 compliant email address validator.",
   "main": "dist/true-email-validator.cjs",
   "module": "dist/true-email-validator.mjs",
   "exports": {
@@ -32,7 +32,9 @@
   "devDependencies": {
     "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
     "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
-    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7"
+    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
+    "dmd-readme-api": "^1.0.0-beta.2",
+    "jsdoc-to-markdown": "^8.0.3"
   },
   "dependencies": {
     "punycode": "^2.3.1",
