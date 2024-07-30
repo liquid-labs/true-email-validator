@@ -1,4 +1,5 @@
 # true-email-validator
+[![coverage: 100%](./.readme-assets/coverage.svg)](https://github.com/liquid-labs/true-email-validator/pulls?q=is%3Apr+is%3Aclosed)
 
 A fully RFC 5322 and RFC 6531/6532 compliant email address validator.
 
