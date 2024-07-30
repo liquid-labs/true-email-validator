@@ -31,4 +31,16 @@ describe('getLatestTLDs', () => {
     expect('कॉम' in result).toBe(true)
     expect('xn--11b4c3d' in result).toBe(true)
   })
+
+  test('raises exception on non-OK status', async () => {
+    fetch = async () => { return { ok: false, status: 500 } } // eslint-disable-line no-global-assign
+
+    try {
+      await getLatestTLDs()
+      throw new Error('did not throw as expected')
+    }
+    catch (e) {
+      expect(e.message).toMatch(/500/)
+    }
+  })
 })
