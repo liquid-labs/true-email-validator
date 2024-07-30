@@ -7,8 +7,23 @@ import { validTLDs } from './valid-tlds'
  * Email address parts and validation data.
  * @typedef {object} EmailData
  * @property {boolean} isValid - True if the input is a valid email address according to the options.
- * @property {string} commentLocalPartPrefix - The embedded comment, if any, prefixed to the address username (local 
- *   part).
+ * @property {string} username - The username or local part of the email address.
+ * @property {string|undefined} domain - The domain value, if present. Exactly one of `domain` and `domainLiteral` will 
+ *   always be defined for a syntactically valid email address.
+ * @property {string|undefined} domainLiteral - The domain literal value, if present. Exactly one of `domain` and 
+ *   `domainLiteral` will always be defined for a syntactically valid email address.
+ * @property {Array.<string>} issues - Lists the issues, if any, rendering the email invalid according to the effective 
+ *   validation options. At least one issue _should_ be present if `isValid` is false and the array _should_ be empty 
+ *   if `isValid` is true. This is guaranteed for the built in validation checks, but `validateResult` checks can cause
+ *   a violation of this norm if the validation function is not correctly implemented.
+ * @property {string|undefined} commentLocalPartPrefix - The embedded comment, if any, immediately before the address 
+ *   username (local part).
+ * @property {string|undefined} commentLocalPartSuffix - The embedded comment, if any, immediately following the 
+ *   address username (local part).
+ * @property {string|undefined} commentDomainPrefix - The embedded comment, if any, immediately before the domain or 
+ *   domain literal.
+ * @property {string|undefined} commentDomainSuffix - The embedded comment, if any, immediately after the domain or 
+ *   domain literal.
  */
 
 /**
@@ -93,10 +108,6 @@ import { validTLDs } from './valid-tlds'
  * @returns {EmailData} The results of the validation.
  */
 const validateEmail = function (input, {
-  // @returns {object} An object with fields: `isValid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
- // *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
- // *   (string|undefined), `domainLiteral` (string|undefined), commentDomainSuffix (string|undefined), `issues` (Array of 
- // *   strings)`; note that one and only one of `domain` or `domainLiteral` must be defined.
   allowComments = this?.allowComments || false,
   allowAnyDomain = this?.allowAnyDomain || false,
   allowAnyDomainLiteral = this?.allowAnyDomainLiteral || false,
