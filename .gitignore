@@ -8,4 +8,4 @@ node_modules
 /site/build
 /site/.docusaurus
 /tools
-dist
+/src/tools/bnf-parser/docs/source/static/dist/
