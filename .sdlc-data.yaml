@@ -87,3 +87,14 @@ projects:
           path: >-
             /Users/zane/playground/true-email-validator/.readme-assets/coverage.svg
           purpose: Test coverage badge for README.md.
+    github-workflow:
+      dependencies: []
+      artifacts:
+        - builder: '@liquid-labs/sdlc-projects-badges-github-workflows'
+          version: 1.0.0-alpha.2
+          priority: '1'
+          content: >-
+            [![Unit
+            tests](https://github.com/liquid-labs/true-email-validator/actions/workflows/unit-tests-node.yaml/badge.svg)](https://github.com/liquid-labs/true-email-validator/actions/workflows/unit-tests-node.yaml)
+          purpose: Display status of 'Unit tests' GitHub Workflow.
+          config: {}
