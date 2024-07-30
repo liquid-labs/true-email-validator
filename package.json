@@ -62,7 +62,7 @@
       ]
     },
     "linting": {
-      "ignores": [ "src/tools/**/*", "src/lib/bnf/**/*" ]
+      "ignores": [ "src/tools/**/*", "src/lib/bnf/**/*", "src/lib/valid-tlds.mjs" ]
     }
   }
 }
