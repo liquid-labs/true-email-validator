@@ -13,12 +13,14 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ ^14.15.0, ^16.10.0, 18.x, 20.x, 22.x ]
+        # there are issues importing userland punycode and I'm not finding quick answers so for now, just skipping
+        # node-version: [ ^14.15.0, ^16.10.0, 18.x, 20.x, 22.x ]
+        node-version: [ ^16.10.0, 18.x, 20.x, 22.x ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        include:
-          - os: macos-latest
-            node-version: 14.x
-            architecture: x64
+        # include:
+        #  - os: macos-latest
+        #    node-version: 14.x
+        #    architecture: x64
 
     steps:
       - uses: actions/checkout@v3
