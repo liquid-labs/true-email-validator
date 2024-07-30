@@ -250,6 +250,7 @@ const validateEmail = function (input, {
 
   let result = {
     valid : issues.length === 0,
+    address : `${username}@${domain || '[' + domainLiteral + ']'}`,
     commentLocalPartPrefix,
     username,
     commentLocalPartSuffix,

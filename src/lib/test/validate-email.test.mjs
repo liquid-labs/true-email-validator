@@ -4,6 +4,7 @@ const testCases = [
   ['john.smith@google.com', undefined, 
     { 
       valid: true, 
+      address: 'john.smith@google.com',
       username: 'john.smith', 
       domain: 'google.com',
       domainLiteral: undefined,
@@ -12,18 +13,7 @@ const testCases = [
   ['(comment A)"foo@bar"(comment B)@(comment C)baz.com(comment D)', { allowComments: true }, 
     { 
       valid: true, 
-      commentLocalPartPrefix: 'comment A', 
-      username: '"foo@bar"', 
-      commentLocalPartSuffix: 'comment B',
-      commentDomainPrefix: 'comment C',
-      domain: 'baz.com',
-      domainLiteral: undefined,
-      commentDomainSuffix: 'comment D',
-      issues: []
-    }],
-  ['(comment A)"foo@bar"(comment B)@(comment C)baz.com(comment D)', { allowComments: true }, 
-    { 
-      valid: true, 
+      address: '"foo@bar"@baz.com',
       commentLocalPartPrefix: 'comment A', 
       username: '"foo@bar"', 
       commentLocalPartSuffix: 'comment B',
@@ -37,6 +27,7 @@ const testCases = [
     { allowComments: true, allowIPV4:true }, 
     { 
       valid: true, 
+      address: '"foo@bar"@[123.123.123.124]',
       commentLocalPartPrefix: 'comment A', 
       username: '"foo@bar"', 
       commentLocalPartSuffix: 'comment B',
@@ -49,6 +40,7 @@ const testCases = [
   ['foo@[::8]', { allowIPV6 : true },
     { 
       valid: true,
+      address: 'foo@[::8]',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -85,6 +77,7 @@ const testCases = [
   ['foo@[blah]', { allowIPV4 : true },
     { 
       valid: false,
+      address: 'foo@[blah]',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -169,6 +162,7 @@ const testCases = [
   ['foo@127.0.0.1', undefined,
     { 
       valid: false,
+      address: 'foo@127.0.0.1',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -757,12 +751,47 @@ const testCases = [
     }],
 ]
 
-describe('validateEmail', () => {
-  test.each(testCases)('%s, options %p results in %p', (email, options, expected) =>
-    expect(validateEmail(email, options)).toEqual(expected))
+// to avoid having to specify 'address' for every test, we massage the test cases into two versions, which feed 
+// different tests, one without addresses, and one of only cases with address
+const noAddressTestCases = testCases.map((testCase) => { 
+  const { validateInput, validateResult } = testCase?.[1] || {}
+  delete testCase[1]?.validateInput
+  delete testCase[1]?.validateResult
+  const clone = structuredClone(testCase)
+  if (clone[1] !== undefined) {
+    clone[1].validateInput = validateInput
+    clone[1].validateResult = validateResult
+  }
+  delete clone[2].address
+  return clone
+})
 
-  test.each(testCases)('%s, context %p results in %p', (email, context = {}, expected) => {
-    context.validation = validateEmail
-    expect(context.validation(email)).toEqual(expected)
+const addressTestCases = testCases
+  .filter((testCase) => !!testCase[2].address)
+  .map((testCase) => {
+    const clone = structuredClone(testCase)
+    clone[2] = clone[2].address
+    return clone
   })
+
+describe('validateEmail', () => {
+  test.each(noAddressTestCases)('%s, options %p results in %p', (email, options, expected) => {
+  // test.each(testCases)('%s, options %p results in %p', (email, options, expected) => {
+    const result = validateEmail(email, options)
+    delete result.address // because we don't want to specify for each test
+    // the address is tested below
+    expect(result).toEqual(expected)
+  })
+
+  // essentially same as above test, just checks the context settings are correct when called with 'this'
+  test.each(noAddressTestCases)('%s, context %p results in %p', (email, context = {}, expected) => {
+    context.validation = validateEmail
+    const result = context.validation(email)
+    delete result.address
+    expect(result).toEqual(expected)
+  })
+
+  // test the address is correctly reported
+  test.each(addressTestCases)('%s, options %p => address %s', (email, options, expectedAddress) =>
+    expect(validateEmail(email, options).address).toBe(expectedAddress))
 })
