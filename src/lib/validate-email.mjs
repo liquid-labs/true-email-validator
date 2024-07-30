@@ -4,24 +4,50 @@ import * as emailBNF from './bnf/email.js'
 import { validTLDs } from './valid-tlds'
 
 /**
+ * Email address parts and validation data.
+ * @typedef {object} EmailData
+ * @property {boolean} isValid - True if the input is a valid email address according to the options.
+ * @property {string} commentLocalPartPrefix - The embedded comment, if any, prefixed to the address username (local 
+ *   part).
+ */
+
+/**
  * Validates an email address according to RFC 5322 (email messaging), RFC 6531/6532 (internationalized email), and RFC 
- * 5890 (internationalized domain names).
+ * 5890 (internationalized domain names). Validation happens in two general steps. First, the input is parsed according 
+ * to the relevant RFC specifications. If this is successful, then the result will always contain a `username`, 
+ * `address`, and either `domain` or `domainLiteral` fields. If these are present, you know that the email was 
+ * successfully parsed. The second stage validates the parsed email components against the provided options or option 
+ * defaults. Therefore, you can have a situation where an email address is valid according to the specs and can be 
+ * parsed without an issue, but is still _invalid_ according to the effective options (or defaults).
+ * 
+ * By default, the validation restricts possible features in the email address—such as comments and domain 
+ * literals—which are not normally wanted in basic email address. In particular, the default options:
+ * - disallow embedded comments,
+ * - disallow domain literal (IP addressing),
+ * - disallow the 'localhost' domain,
+ * - restricts possible TLDs to known good TLDs,
+ * - restricts domain names to valid subdomain and TLDs based on DNS and ICANN rules beyond the email address 
+ *   specification, and
+ * - performs extra validation for known provider domains google.com and hotmail.com.
+ * 
+ * Options can be explicitly defined to allow for a more liberal or restrictive validation.
  * 
  * @param {string} input - The string or user input to validate as an email address.
  * @param {object} options - The validation options.
- * @param {boolean} options.allowComments - If true, allows embedded comments in the address like '(comment
- *   john@foo.com'. Note, the comments, if present, will be extracted regardless of this setting, the result `valid` 
- *   field will just be set false and an issue will be reported.
- * @param {boolean}options.allowAnyDomain - If true, then allows any syntactically valid domain value except a 
- *   localhost name or address (unless `allowLocalHost` is also set true). Note that impossible sub-domain labels (
- *   e.g., a label more than 63 characters long or a single digit) or TLDs (e.g. '123') will still trigger an invalid 
- *   result. Otherwise, the domain value is verified as recognizable as a domain name (as opposed to an IP address, for 
- *   instance).
- * @param {boolean} options.allowAnyDomainLiteral - If true, allows any syntactically valid domain literal value that 
- *   is not a localhost address (unless `allowLocalhost` is also true). In general, domain literal values point to
- *   IPV4/6 addresses and the validation will (when `allowIP4` and/or`allowIPV6` are true), allow valid IP address 
- *   values but would reject other domain literal values, unless this value is set true. Note, if this value is true 
- *   then allowIPV4` and `allowIPV6` are essentially ignored.
+ * @param {boolean} options.allowComments - If true, allows embedded comments in the address like '(comment)
+ *   john@foo.com', which are disallowed by default. Note, the comments, if present, will be extracted regardless of 
+ *   this setting, the result `valid` field will just be set false and an issue will be reported.
+ * @param {boolean}options.allowAnyDomain - If true, then overrides all default restrictions and format checks of the 
+ *   domain value and allows any syntactically valid domain value except a localhost name or address (unless 
+ *   `allowLocalHost` is also set true). Note that impossible sub-domain labels (e.g., a label more than 63 characters 
+ *   long or a single digit) or TLDs (e.g. '123') will still trigger an invalid result. Otherwise, the domain value is 
+ *   verified as recognizable as a domain name (as opposed to an IP address, for instance).
+ * @param {boolean} options.allowAnyDomainLiteral - If true, then overrides default restrictions and format checks of 
+ *   domain literal values and allows any syntactically valid domain literal value that is not a localhost address (
+ *   unless `allowLocalhost` is also true). In general, domain literal values point to IPV4/6 addresses and the 
+ *   validation will (when `allowIP4` and/or`allowIPV6` are true), allow valid IP address values but would reject other 
+ *   domain literal values, unless this value is set true. Note, if this value is true then allowIPV4` and `allowIPV6` 
+ *   are essentially ignored.
  * @param {boolean} options.allowIPV4 - Allows IPV4 domain literal values. Note that any loopback address will still 
  *   cause a validation error unless `allowLocalHost` is also set true. See `allowAnyDomainLiteral`, `allowIPV6`, and 
  *  `allowLocahost`.`
@@ -34,6 +60,7 @@ import { validTLDs } from './valid-tlds'
  *   good TLDs. To limit this list or use an updated list, set this value to an array of acceptable TLDs or a map with 
  *   valid TLD keys (the value is not used). You can use the `getLatestTLDs`, also exported by this package, to get an 
  *   object defining the most current TLDs as registered with ICANN. See `arbitraryTLDs`.
+ * @param {boolean} options.allowQuotedLocalPart - Overrides default restriction and allows quoted username/local parts.
  * @param {boolean} options.arbitraryTLDs - Skips the 'known TLD' check and allows any validly formatted TLD name. This 
  *   is still restricted by the TLD name restrictions which are tighter than standard domain labels.
  * @param {boolean} options.excludeChars - Either a string or array of excluded characters. In the array form, it will 
@@ -63,18 +90,20 @@ import { validTLDs } from './valid-tlds'
  *   `issues` field as appropriate. E.g., if `validateValue` overrides a `valid: false`, then `issues` should be 
  *   truncated. Like wise, if additional issues are found then they should be included in the `issues``array.
  * 
- * @returns {object} An object with fields: `isValid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
- *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
- *   (string|undefined), `domainLiteral` (string|undefined), commentDomainSuffix (string|undefined), `issues` (Array of 
- *   strings)`; note that one and only one of `domain` or `domainLiteral` must be defined.
+ * @returns {EmailData} The results of the validation.
  */
 const validateEmail = function (input, {
+  // @returns {object} An object with fields: `isValid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
+ // *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
+ // *   (string|undefined), `domainLiteral` (string|undefined), commentDomainSuffix (string|undefined), `issues` (Array of 
+ // *   strings)`; note that one and only one of `domain` or `domainLiteral` must be defined.
   allowComments = this?.allowComments || false,
   allowAnyDomain = this?.allowAnyDomain || false,
   allowAnyDomainLiteral = this?.allowAnyDomainLiteral || false,
   allowIPV4 = this?.allowIPV4 || false,
   allowIPV6 = this?.allowIPV6 || false,
   allowLocalhost = this?.allowLocalhost || false,
+  allowQuotedLocalPart = this?.allowQuotedLocalPart || false,
   allowedTLDs = this?.allowedTLDs,
   arbitraryTLDs = this?.arbitraryTLDs || false,
   excludeChars = this?.excludeChars || [],
@@ -210,6 +239,9 @@ const validateEmail = function (input, {
     }
   }
   
+  if (allowQuotedLocalPart !== true && username.startsWith('"')) {
+    issues.push('uses disallowed quoted username/local part')
+  }
   if (excludeChars?.length > 0) {
     excludeChars = typeof excludeChars === 'string' ? excludeChars.split('') : excludeChars
     for (const char of excludeChars) {

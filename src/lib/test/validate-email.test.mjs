@@ -10,7 +10,21 @@ const testCases = [
       domainLiteral: undefined,
       issues: []
     }],
-  ['(comment A)"foo@bar"(comment B)@(comment C)baz.com(comment D)', { allowComments: true }, 
+  ['"foo@bar"@baz.com', undefined,
+    {
+      isValid: false, 
+      address: '"foo@bar"@baz.com',
+      commentLocalPartPrefix: undefined, 
+      username: '"foo@bar"', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'baz.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: ['uses disallowed quoted username/local part']
+    }],
+  ['(comment A)"foo@bar"(comment B)@(comment C)baz.com(comment D)',
+    { allowComments: true, allowQuotedLocalPart: true }, 
     { 
       isValid: true, 
       address: '"foo@bar"@baz.com',
@@ -24,7 +38,7 @@ const testCases = [
       issues: []
     }],
   ['(comment A)"foo@bar"(comment B)@(comment C)[123.123.123.124](comment D)',
-    { allowComments: true, allowIPV4:true }, 
+    { allowComments: true, allowIPV4:true, allowQuotedLocalPart: true }, 
     { 
       isValid: true, 
       address: '"foo@bar"@[123.123.123.124]',
@@ -634,7 +648,7 @@ const testCases = [
       domain: 'google.com',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['Google does not support quoted email addresses']
+      issues: ['uses disallowed quoted username/local part', 'Google does not support quoted email addresses']
     }],
   ['"foo@bar"@hotmail.com', undefined,
     { 
@@ -646,7 +660,7 @@ const testCases = [
       domain: 'hotmail.com',
       domainLiteral: undefined,
       commentDomainSuffix: undefined,
-      issues: ['Hotmail does not support quoted email addresses']
+      issues: ['uses disallowed quoted username/local part', 'Hotmail does not support quoted email addresses']
     }],
   ['foo#@google.com', { noDomainSpecificValidation: true },
     { 
