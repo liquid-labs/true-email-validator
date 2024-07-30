@@ -70,5 +70,8 @@
     "linting": {
       "ignores": [ "src/tools/**/*", "src/lib/bnf/**/*", "src/lib/valid-tlds.mjs" ]
     }
+  },
+  "_comply": {
+    "orgKey": "@liquid-labs"
   }
 }
