@@ -19,7 +19,13 @@
     "README.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "make build",
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "test": "make test",
+    "prepack": "make build",
+    "preversion": "make qa",
+    "qa": "make qa"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
