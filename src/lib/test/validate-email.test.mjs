@@ -3,7 +3,7 @@ import { validateEmail } from '../validate-email'
 const testCases = [
   ['john.smith@google.com', undefined, 
     { 
-      valid: true, 
+      isValid: true, 
       address: 'john.smith@google.com',
       username: 'john.smith', 
       domain: 'google.com',
@@ -12,7 +12,7 @@ const testCases = [
     }],
   ['(comment A)"foo@bar"(comment B)@(comment C)baz.com(comment D)', { allowComments: true }, 
     { 
-      valid: true, 
+      isValid: true, 
       address: '"foo@bar"@baz.com',
       commentLocalPartPrefix: 'comment A', 
       username: '"foo@bar"', 
@@ -26,7 +26,7 @@ const testCases = [
   ['(comment A)"foo@bar"(comment B)@(comment C)[123.123.123.124](comment D)',
     { allowComments: true, allowIPV4:true }, 
     { 
-      valid: true, 
+      isValid: true, 
       address: '"foo@bar"@[123.123.123.124]',
       commentLocalPartPrefix: 'comment A', 
       username: '"foo@bar"', 
@@ -39,7 +39,7 @@ const testCases = [
     }],
   ['foo@[::8]', { allowIPV6 : true },
     { 
-      valid: true,
+      isValid: true,
       address: 'foo@[::8]',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
@@ -52,7 +52,7 @@ const testCases = [
     }],
   ['foo@[::8]', { allowIPV4 : true, allowIPV6 : true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -64,7 +64,7 @@ const testCases = [
     }],
   ['foo@[123.123.123.123]', { allowIPV4 : true, allowIPV6 : true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -76,7 +76,7 @@ const testCases = [
     }],
   ['foo@[blah]', { allowIPV4 : true },
     { 
-      valid: false,
+      isValid: false,
       address: 'foo@[blah]',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
@@ -89,7 +89,7 @@ const testCases = [
     }],
   ['foo@[blah]', { allowIPV6 : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -101,7 +101,7 @@ const testCases = [
     }],
   ['foo@[blah]', { allowIPV4 : true, allowIPV6 : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -113,7 +113,7 @@ const testCases = [
     }],
   ['foo@[255.240.0.0]', { allowIPV4 : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -125,7 +125,7 @@ const testCases = [
     }],
   ['foo@[127.0.0.1]', { allowIPV4 : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -137,7 +137,7 @@ const testCases = [
     }],
   ['foo@[::1]', { allowIPV6 : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -149,7 +149,7 @@ const testCases = [
     }],
   ['foo@[::1]', { allowAnyDomainLiteral : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -161,7 +161,7 @@ const testCases = [
     }],
   ['foo@127.0.0.1', undefined,
     { 
-      valid: false,
+      isValid: false,
       address: 'foo@127.0.0.1',
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
@@ -174,7 +174,7 @@ const testCases = [
     }],
   ['foo@127.0.0.1', { allowAnyDomain : true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -186,7 +186,7 @@ const testCases = [
     }],
   ['foo@127.0.0.1', { allowAnyDomain : true, allowLocalhost : true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -198,7 +198,7 @@ const testCases = [
     }],
   ['foo@13.123.0.1', { allowAnyDomain : true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -208,10 +208,10 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
-  ['foo@::1', undefined, { valid: false, issues: ['not recognized as a valid email address'] }],
+  ['foo@::1', undefined, { isValid: false, issues: ['not recognized as a valid email address'] }],
   ['foo@localhost', { allowLocalhost: true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -223,7 +223,7 @@ const testCases = [
     }],
   ['foo@bar.notatld', { arbitraryTLDs : true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -235,7 +235,7 @@ const testCases = [
     }],
   ['foo@bar.123', { arbitraryTLDs : true }, // arbitrary's OK, but '123' is not a valid TLD name
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -247,7 +247,7 @@ const testCases = [
     }],
   ['foo@1.com', { allowAnyDomain: true, arbitraryTLDs : true }, // '1' is not a valid domain label
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -259,7 +259,7 @@ const testCases = [
     }],
   ['foo@bar.notatld', { allowedTLDs : { notatld: true } },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -271,7 +271,7 @@ const testCases = [
     }],
   ['foo@bar.notatld', { allowedTLDs : [ 'notatld' ] },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -281,16 +281,16 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: []
     }],
-  [undefined, undefined, { valid: false, issues: ['is null or undefined']}],
-  [null, undefined, { valid: false, issues: ['is null or undefined']}],
-  [123, undefined, { valid: false, issues: ['is not type string']}],
-  ['foo', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
-  ['foo..bar@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
-  ['.foo@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
-  ['foo.@baz.com', undefined, { valid: false, issues: ['not recognized as a valid email address']}],
+  [undefined, undefined, { isValid: false, issues: ['is null or undefined']}],
+  [null, undefined, { isValid: false, issues: ['is null or undefined']}],
+  [123, undefined, { isValid: false, issues: ['is not type string']}],
+  ['foo', undefined, { isValid: false, issues: ['not recognized as a valid email address']}],
+  ['foo..bar@baz.com', undefined, { isValid: false, issues: ['not recognized as a valid email address']}],
+  ['.foo@baz.com', undefined, { isValid: false, issues: ['not recognized as a valid email address']}],
+  ['foo.@baz.com', undefined, { isValid: false, issues: ['not recognized as a valid email address']}],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@foo.com', undefined, // 64 char local part
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
       commentLocalPartSuffix: undefined,
@@ -302,7 +302,7 @@ const testCases = [
     }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl@foo.com', undefined, // 65 char local part
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl', 
       commentLocalPartSuffix: undefined,
@@ -314,7 +314,7 @@ const testCases = [
     }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl@foo.com', { noLengthCheck : true }, // 65 char local part
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlkl', 
       commentLocalPartSuffix: undefined,
@@ -326,7 +326,7 @@ const testCases = [
     }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.com', undefined, // 254 bytes total
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
       commentLocalPartSuffix: undefined,
@@ -338,7 +338,7 @@ const testCases = [
     }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd.com', undefined, // 255 bytes total
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk', 
       commentLocalPartSuffix: undefined,
@@ -350,7 +350,7 @@ const testCases = [
     }],
   ['(comment)foo@bar.com', undefined,
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: 'comment', 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -362,7 +362,7 @@ const testCases = [
     }],
   ['foo(comment)@bar.com', undefined, 
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: 'comment',
@@ -374,7 +374,7 @@ const testCases = [
     }],
   ['foo@(comment)bar.com', undefined, 
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -386,7 +386,7 @@ const testCases = [
     }],
   ['foo@bar.com(comment)', undefined, 
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -398,7 +398,7 @@ const testCases = [
     }],
   ['foo@[1.1.1.1](comment)', undefined, 
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -410,7 +410,7 @@ const testCases = [
     }],
   ['foo@1.1.1.1', undefined, 
     { 
-      valid: false, 
+      isValid: false, 
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -422,7 +422,7 @@ const testCases = [
     }],
   ['foo@[123.123.123.123]', { allowAnyDomainLiteral: true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -434,7 +434,7 @@ const testCases = [
     }],
   ['foo@[::8]', { allowAnyDomainLiteral: true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -446,7 +446,7 @@ const testCases = [
     }],
   ['foo@localhost', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -458,7 +458,7 @@ const testCases = [
     }],
   ['foo@bar.notatld', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -470,7 +470,7 @@ const testCases = [
     }],
   ['foo@notatld', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -482,7 +482,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeChars : ['#', '%'] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -494,7 +494,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeChars : ['#%'] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -506,7 +506,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeChars : '#%' },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -518,7 +518,7 @@ const testCases = [
     }],
   ['foo@foo.com', { excludeChars : null },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -530,7 +530,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeDomains : ['foo.com', '.com'] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -542,7 +542,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeDomains : ['com'] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -554,7 +554,7 @@ const testCases = [
     }],
   ['foo#%@foo.com', { excludeDomains : ['foo.com'] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -566,7 +566,7 @@ const testCases = [
     }],
   ['foo#%@barfoo.com', { excludeDomains : ['foo.com'] },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo#%', 
       commentLocalPartSuffix: undefined,
@@ -578,7 +578,7 @@ const testCases = [
     }],
   ['foo@foo.com', { excludeDomains : null },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -590,7 +590,7 @@ const testCases = [
     }],
   ['foo#@google.com', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#', 
       commentLocalPartSuffix: undefined,
@@ -602,7 +602,7 @@ const testCases = [
     }],
   ['foo#@notgoogle.com', undefined,
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo#', 
       commentLocalPartSuffix: undefined,
@@ -614,7 +614,7 @@ const testCases = [
     }],
   ['foo#@hotmail.com', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo#', 
       commentLocalPartSuffix: undefined,
@@ -626,7 +626,7 @@ const testCases = [
     }],
   ['"foo@bar"@google.com', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: '"foo@bar"', 
       commentLocalPartSuffix: undefined,
@@ -638,7 +638,7 @@ const testCases = [
     }],
   ['"foo@bar"@hotmail.com', undefined,
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: '"foo@bar"', 
       commentLocalPartSuffix: undefined,
@@ -650,7 +650,7 @@ const testCases = [
     }],
   ['foo#@google.com', { noDomainSpecificValidation: true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo#', 
       commentLocalPartSuffix: undefined,
@@ -662,7 +662,7 @@ const testCases = [
     }],
   ['foo@com', { noTLDOnly: true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo', 
       commentLocalPartSuffix: undefined,
@@ -674,7 +674,7 @@ const testCases = [
     }],
   ['foo中@bar.com', { noNonASCIILocalPart: true },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo中', 
       commentLocalPartSuffix: undefined,
@@ -687,7 +687,7 @@ const testCases = [
   ['foo1@bar.com', 
     { validateInput : (input) => 'none shall pass' },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo1', 
       commentLocalPartSuffix: undefined,
@@ -700,7 +700,7 @@ const testCases = [
   ['foo2@bar.com', 
     { validateInput : (input) => true },
     { 
-      valid: true,
+      isValid: true,
       commentLocalPartPrefix: undefined, 
       username: 'foo2', 
       commentLocalPartSuffix: undefined,
@@ -713,7 +713,7 @@ const testCases = [
   ['foo3@bar.com', 
     { validateInput : (input) => [] },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo3', 
       commentLocalPartSuffix: undefined,
@@ -724,9 +724,9 @@ const testCases = [
       issues: ['failed custom input validation']
     }],
   ['foo1@bar.com', 
-    { validateResult : (result) => Object.assign({}, result, { valid: false, issues: ['none shall pass'] } ) },
+    { validateResult : (result) => Object.assign({}, result, { isValid: false, issues: ['none shall pass'] } ) },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo1', 
       commentLocalPartSuffix: undefined,
@@ -737,9 +737,9 @@ const testCases = [
       issues: ['none shall pass']
     }],
   ['foo2@bar.com', 
-    { validateResult : (result) => { result.valid = false; result.issues.push('none shall pass') } },
+    { validateResult : (result) => { result.isValid = false; result.issues.push('none shall pass') } },
     { 
-      valid: false,
+      isValid: false,
       commentLocalPartPrefix: undefined, 
       username: 'foo2', 
       commentLocalPartSuffix: undefined,
@@ -754,7 +754,9 @@ const testCases = [
 // to avoid having to specify 'address' for every test, we massage the test cases into two versions, which feed 
 // different tests, one without addresses, and one of only cases with address
 const noAddressTestCases = testCases.map((testCase) => { 
-  const { validateInput, validateResult } = testCase?.[1] || {}
+  const { validateInput, validateResult } = testCase[1] || {}
+  // yes, this modifies the base, but it's OK because the clone gets corrected and there is no crossover with the 
+  // address test cases
   delete testCase[1]?.validateInput
   delete testCase[1]?.validateResult
   const clone = structuredClone(testCase)

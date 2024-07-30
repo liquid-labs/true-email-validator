@@ -63,7 +63,7 @@ import { validTLDs } from './valid-tlds'
  *   `issues` field as appropriate. E.g., if `validateValue` overrides a `valid: false`, then `issues` should be 
  *   truncated. Like wise, if additional issues are found then they should be included in the `issues``array.
  * 
- * @returns {object} An object with fields: `valid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
+ * @returns {object} An object with fields: `isValid` (boolean), `commentLocalPartPrefix` (string|undefined), username 
  *   (string), `commentLocalPartSuffix` (string|undefined), `commentDomainPrefix` (string|undefined), `domain` 
  *   (string|undefined), `domainLiteral` (string|undefined), commentDomainSuffix (string|undefined), `issues` (Array of 
  *   strings)`; note that one and only one of `domain` or `domainLiteral` must be defined.
@@ -87,17 +87,17 @@ const validateEmail = function (input, {
   validateResult = this?.validateResult
 } = {}) {
   if (input === undefined || input === null) {
-    return { valid: false, issues: ['is null or undefined'] }
+    return { isValid: false, issues: ['is null or undefined'] }
   }
   else if (typeof input !== 'string') {
-    return { valid: false, issues: ['is not type string'] }
+    return { isValid: false, issues: ['is not type string'] }
   }
 
   const issues = []
 
   const addrSpec = emailBNF.Parse_Addr_spec(input).root
   if (addrSpec === undefined) {
-    return { valid: false, issues: ['not recognized as a valid email address'] }
+    return { isValid: false, issues: ['not recognized as a valid email address'] }
   }
   // else
 
@@ -249,7 +249,7 @@ const validateEmail = function (input, {
   }
 
   let result = {
-    valid : issues.length === 0,
+    isValid : issues.length === 0,
     address : `${username}@${domain || '[' + domainLiteral + ']'}`,
     commentLocalPartPrefix,
     username,
@@ -264,7 +264,7 @@ const validateEmail = function (input, {
   if (validateInput !== undefined) {
     const validateResult = validateInput(input)
     if (validateResult !== true) {
-      result.valid = false
+      result.isValid = false
       if (typeof validateResult === 'string') {
         result.issues.push(validateResult)
       }
