@@ -698,6 +698,30 @@ const testCases = [
       commentDomainSuffix: undefined,
       issues: ['non-ASCII characters are not allowed in the username (local part) of the address']
     }],
+  ['foo中@bar.com', undefined,
+    { 
+      isValid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo中', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
+  ['foo𗀀@bar.com', undefined, // high-byet unicode 17000
+    { 
+      isValid: true,
+      commentLocalPartPrefix: undefined, 
+      username: 'foo𗀀', 
+      commentLocalPartSuffix: undefined,
+      commentDomainPrefix: undefined,
+      domain: 'bar.com',
+      domainLiteral: undefined,
+      commentDomainSuffix: undefined,
+      issues: []
+    }],
   ['foo1@bar.com', 
     { validateInput : (input) => 'none shall pass' },
     { 
