@@ -33,13 +33,12 @@ describe('getLatestTLDs', () => {
   })
 
   test('raises exception on non-OK status', async () => {
-    fetch = async () => { return { ok: false, status: 500 } } // eslint-disable-line no-global-assign
+    fetch = async () => { return { ok : false, status : 500 } } // eslint-disable-line no-global-assign
 
     try {
       await getLatestTLDs()
       throw new Error('did not throw as expected')
-    }
-    catch (e) {
+    } catch (e) {
       expect(e.message).toMatch(/500/)
     }
   })
