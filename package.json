@@ -24,6 +24,9 @@
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "Apache-2.0",
+  "engines": {
+    "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+  },
   "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
   "bugs": {
     "url": "https://github.com/liquid-labs/true-email-validator/issues"
@@ -56,6 +59,9 @@
         "<rootDir>/coverage/",
         "/lib/bnf/"
       ]
+    },
+    "linting": {
+      "ignores": [ "src/tools/**/*", "src/lib/bnf/**/*" ]
     }
   }
 }
