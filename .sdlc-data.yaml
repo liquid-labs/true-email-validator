@@ -66,6 +66,14 @@ projects:
               Sets up the final basic targets (like 'build') based on the target
               vars (like 'BUILD_TARGETS').
         config: {}
+    github:
+      node-jest-cicd:
+        artifacts:
+          - builder: '@liquid-labs/sdlc-projects-workflow-github-node-jest-cicd'
+            version: 1.0.0-alpha.2
+            path: .github/workflows/unit-tests-node.yaml
+            purpose: Runs node unit test CI/CD using a GitHub Workflow.
+            config: {}
   badges:
     coverage:
       dependencies: []
