@@ -12,4 +12,4 @@ SDLC_JEST:=npx jest
 SDLC_JEST_CONFIG:=$(shell npm explore @liquid-labs/sdlc-resource-jest -- pwd)/dist/jest.config.js
 
 SDLC_ESLINT:=npx eslint
-SDLC_ESLINT_CONFIG:=$(shell npm explore @liquid-labs/sdlc-resource-eslint -- pwd)/dist/eslint.config.js
+SDLC_ESLINT_CONFIG:=$(shell npm explore @liquid-labs/sdlc-resource-eslint -- pwd)/dist/eslint.config.cjs
