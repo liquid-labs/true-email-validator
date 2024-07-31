@@ -4,8 +4,6 @@ import { getLatestTLDs } from '../get-latest-tlds'
 
 jest.mock('node-fetch', () => jest.fn())
 
-const origFetch = fetch
-
 describe('getLatestTLDs', () => {
   test('converts list to map', async () => {
     fetch.mockImplementation(async () => { return { text : async () => 'FOO\nBAR\n' } })
