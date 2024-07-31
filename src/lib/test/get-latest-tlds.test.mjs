@@ -1,14 +1,14 @@
+import fetch from 'node-fetch'
+
 import { getLatestTLDs } from '../get-latest-tlds'
+
+jest.mock('node-fetch', () => jest.fn())
 
 const origFetch = fetch
 
 describe('getLatestTLDs', () => {
-  afterAll(() => {
-    fetch = origFetch // eslint-disable-line no-global-assign
-  })
-
   test('converts list to map', async () => {
-    fetch = async () => { return { text : async () => 'FOO\nBAR\n' } } // eslint-disable-line no-global-assign
+    fetch.mockImplementation(async () => { return { text : async () => 'FOO\nBAR\n' } })
 
     const result = await getLatestTLDs()
     expect('foo' in result).toBe(true)
@@ -16,8 +16,7 @@ describe('getLatestTLDs', () => {
   })
 
   test('ignores comments', async () => {
-    // eslint-disable-next-line no-global-assign
-    fetch = async () => { return { text : async () => '# comment\nFOO\nBAR\n' } }
+    fetch.mockImplementation(async () => { return { text : async () => '# comment\nFOO\nBAR\n' } })
 
     const result = await getLatestTLDs()
     expect('foo' in result).toBe(true)
@@ -25,7 +24,7 @@ describe('getLatestTLDs', () => {
   })
 
   test('converts i18n/xn domains', async () => {
-    fetch = async () => { return { text : async () => 'XN--11B4C3D' } } // eslint-disable-line no-global-assign
+    fetch.mockImplementation(async () => { return { text : async () => 'XN--11B4C3D' } })
 
     const result = await getLatestTLDs()
     expect('कॉम' in result).toBe(true)
@@ -33,7 +32,7 @@ describe('getLatestTLDs', () => {
   })
 
   test('raises exception on non-OK status', async () => {
-    fetch = async () => { return { ok : false, status : 500 } } // eslint-disable-line no-global-assign
+    fetch.mockImplementation(async () => { return { ok : false, status : 500 } })
 
     try {
       await getLatestTLDs()

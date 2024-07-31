@@ -46,6 +46,7 @@
     "jsdoc-to-markdown": "^8.0.3"
   },
   "dependencies": {
+    "node-fetch": "^3.3.2",
     "punycode": "^2.3.1",
     "regex-repo": "^4.0.0"
   },
@@ -68,7 +69,11 @@
       ]
     },
     "linting": {
-      "ignores": [ "src/tools/**/*", "src/lib/bnf/**/*", "src/lib/valid-tlds.mjs" ]
+      "ignores": [
+        "src/tools/**/*",
+        "src/lib/bnf/**/*",
+        "src/lib/valid-tlds.mjs"
+      ]
     }
   },
   "_comply": {
