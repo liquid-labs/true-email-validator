@@ -31,7 +31,7 @@
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "Apache-2.0",
   "engines": {
-    "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+    "node": "^16.10.0 || >=18.0.0"
   },
   "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
   "bugs": {
@@ -42,13 +42,14 @@
     "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
     "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
     "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
+    "core-js": "^3.38.0",
     "dmd-readme-api": "^1.0.0-beta.2",
     "jsdoc-to-markdown": "^8.0.3"
   },
   "dependencies": {
     "node-fetch": "^3.3.2",
     "punycode": "^2.3.1",
-    "regex-repo": "^4.0.0"
+    "regex-repo": "^4.0.1"
   },
   "_sdlc": {
     "jestConfig": {
