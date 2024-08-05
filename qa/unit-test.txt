@@ -1,0 +1,17 @@
+Test git rev: 19f4ac0ac6958da28147f489c80813a90403a1a8
+PASS lib/test/validate-email.test.js
+PASS lib/test/get-latest-tlds.test.js
+---------------------|---------|----------|---------|---------|-------------------
+File                 | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------------|---------|----------|---------|---------|-------------------
+All files            |     100 |    98.92 |     100 |     100 |                   
+ get-latest-tlds.mjs |     100 |      100 |     100 |     100 |                   
+ valid-tlds.mjs      |     100 |      100 |     100 |     100 |                   
+ validate-email.mjs  |     100 |     98.9 |     100 |     100 | 4,207             
+---------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 2 passed, 2 total
+Tests:       159 passed, 159 total
+Snapshots:   0 total
+Time:        0.24 s, estimated 1 s
+Ran all test suites.
