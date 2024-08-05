@@ -1,3 +1,5 @@
+import structuredClone from 'core-js/actual/structured-clone'
+
 import { validateEmail } from '../validate-email'
 
 const testCases = [
