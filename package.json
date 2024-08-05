@@ -1,17 +1,83 @@
 {
   "name": "true-email-validator",
   "version": "1.0.0-alpha.0",
-  "description": "",
-  "main": "dist/true-email-validator.js",
+  "description": "A fully RFC 5322 and RFC 6531/6532 compliant email address validator.",
+  "main": "dist/true-email-validator.cjs",
+  "module": "dist/true-email-validator.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/true-email-validator.cjs",
+      "import": "./dist/true-email-valiadotr.mjs"
+    }
+  },
+  "bin": {
+    "emails": "./dist/true-email-validator-exec.js"
+  },
+  "files": [
+    "dist/",
+    "LICENSE.txt",
+    "README.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "make build",
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "test": "make test",
+    "prepack": "make build",
+    "preversion": "make qa",
+    "qa": "make qa"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": "^16.10.0 || >=18.0.0"
+  },
   "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
   "bugs": {
     "url": "https://github.com/liquid-labs/true-email-validator/issues"
   },
-  "homepage": "https://github.com/liquid-labs/true-email-validator#readme"
+  "homepage": "https://github.com/liquid-labs/true-email-validator#readme",
+  "devDependencies": {
+    "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
+    "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.11",
+    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7",
+    "core-js": "^3.38.0",
+    "dmd-readme-api": "^1.0.0-beta.2",
+    "jsdoc-to-markdown": "^8.0.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "punycode": "^2.3.1",
+    "regex-repo": "^4.0.1"
+  },
+  "_sdlc": {
+    "jestConfig": {
+      "coveragePathIgnorePatterns": [
+        "/node_modules/",
+        "/index.[mc]?jsx?",
+        "/test/",
+        "/_tests_/",
+        "\\.test\\.[^.]+\\.[mc]?jsx?",
+        "/test-data/",
+        "/tools/",
+        "<rootDir>/test-staging/",
+        "<rootDir>/dist/",
+        "<rootDir>/qa/",
+        "<rootDir>/coverage/",
+        "/lib/bnf/",
+        "cli/"
+      ]
+    },
+    "linting": {
+      "ignores": [
+        "src/tools/**/*",
+        "src/lib/bnf/**/*",
+        "src/lib/valid-tlds.mjs"
+      ]
+    }
+  },
+  "_comply": {
+    "orgKey": "@liquid-labs"
+  }
 }

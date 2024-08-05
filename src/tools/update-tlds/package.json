@@ -1,0 +1,24 @@
+{
+  "name": "true-email-validator/update-tlds",
+  "version": "1.0.0-alpha.0",
+  "description": "A tool to generate compile-time TLD verification data for use in the runtime library.",
+  "main": "tools/update-tlds.mjs",
+  "type": "module",
+  "engines": {
+    "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
+  "license": "UNLICENSED",
+  "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
+  "bugs": {
+    "url": "https://github.com/liquid-labs/true-email-validator/issues"
+  },
+  "homepage": "https://github.com/liquid-labs/true-email-validator#readme",
+  "devDependencies": {
+    "regex": "^3.0.0"
+  }
+}

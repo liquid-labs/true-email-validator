@@ -1,0 +1,33 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build_and_test:
+    name: Build and test package on ${{ matrix.os }}/${{ matrix.node-version }}
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # there are issues importing userland punycode and I'm not finding quick answers so for now, just skipping
+        # node-version: [ ^14.15.0, ^16.10.0, 18.x, 20.x, 22.x ]
+        node-version: [ ^16.10.0, 18.x, 20.x, 22.x ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        # include:
+        #  - os: macos-latest
+        #    node-version: 14.x
+        #    architecture: x64
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
