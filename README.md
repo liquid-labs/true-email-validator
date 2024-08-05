@@ -57,7 +57,7 @@ present in the results object as both represent valid domains from a user's poin
   and may contain uppercase non-ASCII unicode characters per [RFC 4343](https://www.rfc-editor.org/rfc/rfc4343).
 
 
-[**Source code**](./src/lib/get-latest-tlds.mjs#L11)
+[**Source code**](./src/lib/get-latest-tlds.mjs#L12)
 
 <a id="validateEmail"></a>
 ### `validateEmail(input, options)` ⇒ [`EmailData`](#EmailData)
