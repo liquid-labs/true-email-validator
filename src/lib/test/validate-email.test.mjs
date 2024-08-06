@@ -512,7 +512,7 @@ const testCases = [
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
       issues                 : [
-        "contains excluded character '#' in username", 
+        "contains excluded character '#' in username",
         "contains excluded character '%' in username"
       ]
     }],
@@ -539,7 +539,7 @@ const testCases = [
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
       issues                 : [
-        "contains excluded character '#' in username", 
+        "contains excluded character '#' in username",
         "contains excluded character '%' in username"
       ]
     }],
