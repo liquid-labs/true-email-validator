@@ -1,6 +1,7 @@
 import { domainLabelRE, ipHostRE, ipAddressRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
 
-import * as emailBNF from './bnf/email.js'
+import * as emailBNF from './bnf/email'
+import { processValidationResult } from './lib/process-validation-result'
 import { validTLDs } from './valid-tlds'
 
 /**
@@ -314,18 +315,22 @@ const validateEmail = function (input, {
   }
 
   if (validateInput !== undefined) {
-    const validateResult = validateInput(input)
-    if (validateResult !== true) {
-      result.isValid = false
-      if (typeof validateResult === 'string') {
-        result.issues.push(validateResult)
-      } else {
-        result.issues.push('failed custom input validation')
-      }
-    }
+    const validationResult = validateInput(input)
+    result = processValidationResult(validationResult, result, 'input')
   }
   if (validateResult !== undefined) {
-    result = validateResult(result) || result
+    const validationResult = validateResult(result)
+    if (validationResult !== null && // 'null' has typeof 'object'
+        typeof validationResult === 'object' &&
+        validationResult.isValid !== undefined &&
+        validationResult.address !== undefined &&
+        validationResult.issues !== undefined &&
+        (validationResult.domain !== undefined || validationResult.domainLiteral !== undefined)
+    ) {
+      result = validationResult
+    } else if (validationResult !== undefined) {
+      result = processValidationResult(validationResult, result, 'result')
+    } // else validationResult === undefined, which means we expect the original result to be modified
   }
 
   return result

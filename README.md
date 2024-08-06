@@ -109,7 +109,7 @@ Options can be explicitly defined to allow for a more liberal or restrictive val
 **Returns**: [`EmailData`](#EmailData) - The results of the validation.
 
 
-[**Source code**](./src/lib/validate-email.mjs#L112)
+[**Source code**](./src/lib/validate-email.mjs#L113)
 
 <a id="EmailData"></a>
 ### `EmailData` : `object`
@@ -132,7 +132,7 @@ Email address parts and validation data.
 | commentDomainPrefix | `string` \| `undefined` | The embedded comment, if any, immediately before the domain or   domain literal. |
 | commentDomainSuffix | `string` \| `undefined` | The embedded comment, if any, immediately after the domain or   domain literal. |
 
-[**Source code**](./src/lib/validate-email.mjs#L6)
+[**Source code**](./src/lib/validate-email.mjs#L7)
 
 ## TODOs
 
