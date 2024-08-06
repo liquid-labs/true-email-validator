@@ -1,6 +1,6 @@
 {
   "name": "true-email-validator",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "A fully RFC 5322 and RFC 6531/6532 compliant email address validator.",
   "main": "dist/true-email-validator.cjs",
   "module": "dist/true-email-validator.mjs",
