@@ -97,52 +97,50 @@ import { validTLDs } from './valid-tlds'
  *   username/local part of the address.
  * @param {Function} options.validateInput - A function to perform additional, arbitrary validation on a syntactically
  *   valid input string. This function is provided mainly to support input validation libraries where the input is not
- *   recoverable from the processed value. In general, users should prefer `validateResult`. The result of
- *   `validateInput` should be either `true` or a string describing the issue. Any value which is not a string nor
- *   literal `true` is treated as invalidating the input and a generic message is provided.
+ *   recoverable from the processed value. In general, users should prefer `validateResult`. The inputs two the
+ *   function are the input string and the original options to this function. The function must return `true` if the
+ *   validation check passes. Any other result is indicative of failure. If the result is a string, then that is
+ *   understood to be a description of the problem and it's pushed onto the `EmailData` `issues` list. Otherwise, a
+ *   generic 'custom validation failed' message is pushed onto the `issues` list.
  * @param {Function} options.validateResult - A function to perform additional, arbitrary validation on a syntactically
- *   valid email address result. The function should expect a single [`EmailData`](#EmailData) argument which is the
- *   result off all other build in validations and any `validateInput` result (`validateResult` is the last check
- *   performed). If the input was not recognized as an email address to begin with, then `validateResult` is not
- *   invoked.. The function may:
- *   1) return `true`, in which case no change is made to the `EmailData` result and it is returned to the user as is,
- *   2) return `false`, in which case a generic "result validation failed" message is added to the `EmailData` `issues`
- *     and the original `EmailData` is returned to the user,
- *   3) return a string, in which case the string is appended to the `EmailData` `issues` field and the original
- *     `EmailData` is returned to the user,
- *   4) modify the `EmailData` argument directly and either return it or return 'undefined `, which are equivalent and
- *     will result in the input `EmailData` being returned as the function result; in this case, if there is an issue
- *     `EmailData` `isValid` should be set false and an issue appended; if the validation function is overriding an
- *     originally invalid result, then `isValid` should be set true and the `issues` truncated,
- *   5) create a new `EmailData` result object and return it; here again, the `validateResult` function is responsible
- *     for setting `isValid` and updating `issues` according to the results of the validation.
+ *   valid email address result. The function should expect two arguments: [`EmailData`](#EmailData) argument which is
+ *   the result off all other built in validations and any `validateInput` result (`validateResult` is the last check
+ *   performed) and a second argument which is the options originally passed into this func. Note, if the input was not
+ *   recognized as an email address to begin with, then `validateResult` is not invoked. The function may return a
+ *   modified or replacement [`EmailData`](#EmailData) object (any object defining the required fields is recognized as
+ *   an `EmailData` result object). In this case, the function is responsible for setting `EmailData` `isValid` and
+ *   `issues` fields as appropriate. Otherwise, a return value of `true` is taken to indicate the validation succeeded.
+ *   Any other value is treated as a value and `isValid` will be set to `false`. If the result is a string, thin it's
+ *   understood as a description of the issue and is pushed to the `issues` list. Otherwise, a generic 'custom
+ *   validation failed' message is pushed to the `issues` list.
  * @returns {EmailData} The results of the validation.
  */ // Note, the  '1)', '2)', etc. above will be in-lined and won't show up as a list
-const validateEmail = function (input, {
-  allowComments = this?.allowComments || false,
-  allowAnyDomain = this?.allowAnyDomain || false,
-  allowAnyDomainLiteral = this?.allowAnyDomainLiteral || false,
-  allowIPV4 = this?.allowIPV4 || false,
-  allowIPV6 = this?.allowIPV6 || false,
-  allowLocalhost = this?.allowLocalhost || false,
-  allowQuotedLocalPart = this?.allowQuotedLocalPart || false,
-  allowedTLDs = this?.allowedTLDs,
-  arbitraryTLDs = this?.arbitraryTLDs || false,
-  excludeChars = this?.excludeChars || [],
-  excludeDomains = this?.excludeDomains || [],
-  noDomainSpecificValidation = this?.noDomainSpecificValidation || false,
-  noLengthCheck = this?.noLengthCheck || false,
-  noPlusEmails = this?.noPlusEmails || false,
-  noTLDOnly = this?.noTLDOnly || false,
-  noNonASCIILocalPart = this?.noNonASCIILocalPart || false,
-  validateInput = this?.validateInput,
-  validateResult = this?.validateResult
-} = {}) {
+const validateEmail = function (input, options = this || {}) {
   if (input === undefined || input === null) {
     return { isValid : false, issues : ['is null or undefined'] }
   } else if (typeof input !== 'string') {
     return { isValid : false, issues : ['is not type string'] }
   }
+
+  const {
+    allowComments = false,
+    allowAnyDomain = false,
+    allowAnyDomainLiteral = false,
+    allowIPV4 = false,
+    allowIPV6 = false,
+    allowLocalhost = false,
+    allowQuotedLocalPart = false,
+    arbitraryTLDs = false,
+    excludeDomains = [],
+    noDomainSpecificValidation = false,
+    noLengthCheck = false,
+    noPlusEmails = false,
+    noTLDOnly = false,
+    noNonASCIILocalPart = false,
+    validateInput,
+    validateResult
+  } = options
+  let { allowedTLDs, excludeChars = [] } = options
 
   const issues = []
 
@@ -323,11 +321,11 @@ const validateEmail = function (input, {
   }
 
   if (validateInput !== undefined) {
-    const validationResult = validateInput(input)
+    const validationResult = validateInput(input, options)
     result = processValidationResult(validationResult, result, 'input')
   }
   if (validateResult !== undefined) {
-    const validationResult = validateResult(result)
+    const validationResult = validateResult(result, options)
     if (validationResult !== null && // 'null' has typeof 'object'
         typeof validationResult === 'object' &&
         validationResult.isValid !== undefined &&
@@ -336,7 +334,7 @@ const validateEmail = function (input, {
         (validationResult.domain !== undefined || validationResult.domainLiteral !== undefined)
     ) {
       result = validationResult
-    } else if (validationResult !== undefined) {
+    } else {
       result = processValidationResult(validationResult, result, 'result')
     } // else validationResult === undefined, which means we expect the original result to be modified
   }

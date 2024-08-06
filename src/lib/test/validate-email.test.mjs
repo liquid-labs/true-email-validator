@@ -813,7 +813,7 @@ const testCases = [
       issues                 : ['none shall pass']
     }],
   ['foo2@bar.com',
-    { validateResult : (result) => { result.isValid = false; result.issues.push('none shall pass') } },
+    { validateResult : (result) => { result.isValid = false; result.issues.push('none shall pass'); return result } },
     {
       isValid                : false,
       commentLocalPartPrefix : undefined,
@@ -832,6 +832,7 @@ const testCases = [
           result.isValid = false
           result.issues.push('unexpected result.address')
         }
+        return result
       }
     },
     {
@@ -844,6 +845,100 @@ const testCases = [
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
       issues                 : []
+    }],
+  ['foo4@bar.com',
+    {
+      validateResult : () => undefined
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo4',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ['failed custom result validation']
+    }],
+  ['foo5@bar.com',
+    {
+      validateInput : () => undefined
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo5',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ['failed custom input validation']
+    }],
+  ['foo6@bar.com',
+    {
+      validateInput : () => 'none shall pass'
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo6',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ['none shall pass']
+    }],
+  ['foo7@bar.com',
+    {
+      validateResult : () => 'none shall pass'
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo7',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ['none shall pass']
+    }],
+  // tese next two test the 'validation returs a string' and also that the original options get passed through to the
+  // validation function
+  ['foo8@bar.com',
+    {
+      validationOption : 'abc',
+      validateResult   : (result, { validationOption }) => `the secret is '${validationOption}'`
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo8',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ["the secret is 'abc'"]
+    }],
+  ['foo9@bar.com',
+    {
+      validationOption : 'abc',
+      validateInput    : (input, { validationOption }) => `the secret is '${validationOption}'`
+    },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo9',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'bar.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ["the secret is 'abc'"]
     }],
   ['Foo@BAR.COM', undefined, // high-byet unicode 17000
     {
