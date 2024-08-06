@@ -1,6 +1,7 @@
 import { domainLabelRE, ipHostRE, ipAddressRE, ipV6RE, localhostRE, tldNameRE } from 'regex-repo'
 
-import * as emailBNF from './bnf/email.js'
+import * as emailBNF from './bnf/email'
+import { processValidationResult } from './lib/process-validation-result'
 import { validTLDs } from './valid-tlds'
 
 /**
@@ -89,22 +90,32 @@ import { validTLDs } from './valid-tlds'
  *   are known to have more restrictive policies regarding what is and is not a valid email address.
  * @param {boolean} options.noLengthCheck - If true, then skips username (local part) and total email address length
  *   restrictions. Note that domain name label lengths are still enforced.
+ * @param {boolean} options.noPlusEmails - If true, then '+' is not allowed in the username/local part. This is
+ *   equivalent to setting `excludeChars = '+'.`
  * @param {boolean} options.noTLDOnly - If true, then disallows TLD only domains in an address like 'john@com'.
  * @param {boolean} options.noNonASCIILocalPart - If true, then disallows non-ASCII/international characters in the
  *   username/local part of the address.
  * @param {Function} options.validateInput - A function to perform additional, arbitrary validation on a syntactically
  *   valid input string. This function is provided mainly to support input validation libraries where the input is not
  *   recoverable from the processed value. In general, users should prefer `validateResult`. The result of
- *   `validateInput` should be either `true` or a string describing the issue. Any value other than literal `true` is
- *   treated as invalidating the input and a generic message is provided if the return value is not a string.
+ *   `validateInput` should be either `true` or a string describing the issue. Any value which is not a string nor
+ *   literal `true` is treated as invalidating the input and a generic message is provided.
  * @param {Function} options.validateResult - A function to perform additional, arbitrary validation on a syntactically
- *   valid email address result. The function should expect a single object argument which is what `validateEmail`
- *   would have returned if `validateFunction` where undefined. The function may either return the same or a new return
- *   structure (though it should have the same structure) or modify the input structure. The `validateResult` function
- *   is invoked after all other validations have been performed. If the input is not recognizable as a syntactically
- *   valid email, then `validateResult` will not be invoked. The function is expected to add to and/or modify the
- *   `issues` field as appropriate. E.g., if `validateValue` overrides a `valid: false`, then `issues` should be
- *   truncated. Like wise, if additional issues are found then they should be included in the `issues``array.
+ *   valid email address result. The function should expect a single [`EmailData`](#EmailData) argument which is the
+ *   result off all other build in validations and any `validateInput` result (`validateResult` is the last check
+ *   performed). If the input was not recognized as an email address to begin with, then `validateResult` is not
+ *   invoked.. The function may:
+ *   - return `true`, in which case no change is made to the `EmailData` result and it is returned to the user as is,
+ *   - return `false`, in which case a generic "result validation failed" message is added to the `EmailData` `issues`
+ *     and the original `EmailData` is returned to the user,
+ *   - return a string, in which case the string is appended to the `EmailData` `issues` field and the original
+ *     `EmailData` is returned to the user,
+ *   - modify the `EmailData` argument directly and either return it or return 'undefined `, which are equivalent and
+ *     will result in the input `EmailData` being returned as the function result; in this case, if there is an issue
+ *     `EmailData` `isValid` should be set false and an issue appended; if the validation function is overriding an
+ *     originally invalid result, then `isValid` should be set true and the `issues` truncated,
+ *   - create a new `EmailData` result object and return it; here again, the `validateResult` function is responsible
+ *     for setting `isValid` and updating `issues` according to the results of the validation.
  * @returns {EmailData} The results of the validation.
  */
 const validateEmail = function (input, {
@@ -121,6 +132,7 @@ const validateEmail = function (input, {
   excludeDomains = this?.excludeDomains || [],
   noDomainSpecificValidation = this?.noDomainSpecificValidation || false,
   noLengthCheck = this?.noLengthCheck || false,
+  noPlusEmails = this?.noPlusEmails || false,
   noTLDOnly = this?.noTLDOnly || false,
   noNonASCIILocalPart = this?.noNonASCIILocalPart || false,
   validateInput = this?.validateInput,
@@ -257,11 +269,14 @@ const validateEmail = function (input, {
   if (allowQuotedLocalPart !== true && username.startsWith('"')) {
     issues.push('uses disallowed quoted username/local part')
   }
-  if (excludeChars?.length > 0) {
+  if (excludeChars?.length > 0 || noPlusEmails === true) {
     excludeChars = typeof excludeChars === 'string' ? excludeChars.split('') : excludeChars
+    if (noPlusEmails === true) {
+      excludeChars.push('+')
+    }
     for (const char of excludeChars) {
       if (username.includes(char)) {
-        issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}'`)
+        issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}' in username`)
       }
     }
   }
@@ -308,18 +323,22 @@ const validateEmail = function (input, {
   }
 
   if (validateInput !== undefined) {
-    const validateResult = validateInput(input)
-    if (validateResult !== true) {
-      result.isValid = false
-      if (typeof validateResult === 'string') {
-        result.issues.push(validateResult)
-      } else {
-        result.issues.push('failed custom input validation')
-      }
-    }
+    const validationResult = validateInput(input)
+    result = processValidationResult(validationResult, result, 'input')
   }
   if (validateResult !== undefined) {
-    result = validateResult(result) || result
+    const validationResult = validateResult(result)
+    if (validationResult !== null && // 'null' has typeof 'object'
+        typeof validationResult === 'object' &&
+        validationResult.isValid !== undefined &&
+        validationResult.address !== undefined &&
+        validationResult.issues !== undefined &&
+        (validationResult.domain !== undefined || validationResult.domainLiteral !== undefined)
+    ) {
+      result = validationResult
+    } else if (validationResult !== undefined) {
+      result = processValidationResult(validationResult, result, 'result')
+    } // else validationResult === undefined, which means we expect the original result to be modified
   }
 
   return result

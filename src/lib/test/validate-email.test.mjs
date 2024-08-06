@@ -511,7 +511,10 @@ const testCases = [
       domain                 : 'foo.com',
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
-      issues                 : ["contains excluded character '#'", "contains excluded character '%'"]
+      issues                 : [
+        "contains excluded character '#' in username",
+        "contains excluded character '%' in username"
+      ]
     }],
   ['foo#%@foo.com', { excludeChars : ['#%'] },
     {
@@ -523,7 +526,7 @@ const testCases = [
       domain                 : 'foo.com',
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
-      issues                 : ["contains excluded character sequence '#%'"]
+      issues                 : ["contains excluded character sequence '#%' in username"]
     }],
   ['foo#%@foo.com', { excludeChars : '#%' },
     {
@@ -535,7 +538,10 @@ const testCases = [
       domain                 : 'foo.com',
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
-      issues                 : ["contains excluded character '#'", "contains excluded character '%'"]
+      issues                 : [
+        "contains excluded character '#' in username",
+        "contains excluded character '%' in username"
+      ]
     }],
   ['foo@foo.com', { excludeChars : null },
     {
@@ -548,6 +554,18 @@ const testCases = [
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
       issues                 : []
+    }],
+  ['foo+bar@foo.com', { noPlusEmails : true },
+    {
+      isValid                : false,
+      commentLocalPartPrefix : undefined,
+      username               : 'foo+bar',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'foo.com',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : ["contains excluded character '+' in username"]
     }],
   ['foo#%@foo.com', { excludeDomains : ['foo.com', '.com'] },
     {
