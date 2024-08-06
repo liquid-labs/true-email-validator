@@ -11,7 +11,7 @@
     }
   },
   "bin": {
-    "emails": "./dist/true-email-validator-exec.js"
+    "emails": "dist/true-email-validator-exec.js"
   },
   "files": [
     "dist/",
@@ -33,7 +33,10 @@
   "engines": {
     "node": "^16.10.0 || >=18.0.0"
   },
-  "repository": "git+ssh://git@github.com/liquid-labs/true-email-validator.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/liquid-labs/true-email-validator.git"
+  },
   "bugs": {
     "url": "https://github.com/liquid-labs/true-email-validator/issues"
   },
