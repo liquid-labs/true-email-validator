@@ -7,9 +7,11 @@ import { validTLDs } from './valid-tlds'
  * Email address parts and validation data.
  * @typedef {object} EmailData
  * @property {boolean} isValid - True if the input is a valid email address according to the options.
+ * @property {string} address - The normalized email address. The domain portion, if any, will always be in lowercase (
+ *   the `domain` property will preserve the original case).
  * @property {string} username - The username or local part of the email address.
  * @property {string|undefined} domain - The domain value, if present. Exactly one of `domain` and `domainLiteral` will
- *   always be defined for a syntactically valid email address.
+ *   always be defined for a syntactically valid email address. The original case of the domain is preserved.
  * @property {string|undefined} domainLiteral - The domain literal value, if present. Exactly one of `domain` and
  *   `domainLiteral` will always be defined for a syntactically valid email address.
  * @property {Array.<string>} issues - Lists the issues, if any, rendering the email invalid according to the effective
@@ -132,9 +134,16 @@ const validateEmail = function (input, {
 
   const issues = []
 
-  const addrSpec = emailBNF.Parse_Addr_spec(input).root
+  const parseResult = emailBNF.Parse_Addr_spec(input)
+  const { root: addrSpec, isPartial } = parseResult
   if (addrSpec === undefined) {
     return { isValid : false, issues : ['not recognized as a valid email address'] }
+  }
+  else if (isPartial === true) {
+    return { 
+      isValid : false, 
+      issues : ["parsed as a 'partial' address; perhaps you need double quotes (\") around the username (local part)"]
+    }
   }
   // else
 
@@ -288,7 +297,7 @@ const validateEmail = function (input, {
 
   let result = {
     isValid : issues.length === 0,
-    address : `${username}@${domain || '[' + domainLiteral + ']'}`,
+    address : `${username}@${domain?.toLowerCase() || '[' + domainLiteral + ']'}`,
     commentLocalPartPrefix,
     username,
     commentLocalPartSuffix,

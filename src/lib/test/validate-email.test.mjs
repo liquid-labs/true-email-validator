@@ -304,6 +304,11 @@ const testCases = [
   ['foo..bar@baz.com', undefined, { isValid : false, issues : ['not recognized as a valid email address'] }],
   ['.foo@baz.com', undefined, { isValid : false, issues : ['not recognized as a valid email address'] }],
   ['foo.@baz.com', undefined, { isValid : false, issues : ['not recognized as a valid email address'] }],
+  ['f@oo@baz.com', undefined, 
+    { 
+      isValid : false, 
+      issues : ["parsed as a 'partial' address; perhaps you need double quotes (\") around the username (local part)"] 
+    }],
   ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijlk@foo.com', undefined, // 64 char local part
     {
       isValid                : true,
@@ -821,7 +826,20 @@ const testCases = [
       domainLiteral          : undefined,
       commentDomainSuffix    : undefined,
       issues                 : []
-    }]
+    }],
+  ['Foo@BAR.COM', undefined, // high-byet unicode 17000
+    {
+      isValid                : true,
+      address                : 'Foo@bar.com',
+      commentLocalPartPrefix : undefined,
+      username               : 'Foo',
+      commentLocalPartSuffix : undefined,
+      commentDomainPrefix    : undefined,
+      domain                 : 'BAR.COM',
+      domainLiteral          : undefined,
+      commentDomainSuffix    : undefined,
+      issues                 : []
+    }],
 ]
 
 // to avoid having to specify 'address' for every test, we massage the test cases into two versions, which feed
