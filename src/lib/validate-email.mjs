@@ -98,16 +98,24 @@ import { validTLDs } from './valid-tlds'
  * @param {Function} options.validateInput - A function to perform additional, arbitrary validation on a syntactically
  *   valid input string. This function is provided mainly to support input validation libraries where the input is not
  *   recoverable from the processed value. In general, users should prefer `validateResult`. The result of
- *   `validateInput` should be either `true` or a string describing the issue. Any value other than literal `true` is
- *   treated as invalidating the input and a generic message is provided if the return value is not a string.
+ *   `validateInput` should be either `true` or a string describing the issue. Any value which is not a string nor
+ *   literal `true` is treated as invalidating the input and a generic message is provided.
  * @param {Function} options.validateResult - A function to perform additional, arbitrary validation on a syntactically
- *   valid email address result. The function should expect a single object argument which is what `validateEmail`
- *   would have returned if `validateFunction` where undefined. The function may either return the same or a new return
- *   structure (though it should have the same structure) or modify the input structure. The `validateResult` function
- *   is invoked after all other validations have been performed. If the input is not recognizable as a syntactically
- *   valid email, then `validateResult` will not be invoked. The function is expected to add to and/or modify the
- *   `issues` field as appropriate. E.g., if `validateValue` overrides a `valid: false`, then `issues` should be
- *   truncated. Like wise, if additional issues are found then they should be included in the `issues``array.
+ *   valid email address result. The function should expect a single [`EmailData`](#EmailData) argument which is the
+ *   result off all other build in validations and any `validateInput` result (`validateResult` is the last check
+ *   performed). If the input was not recognized as an email address to begin with, then `validateResult` is not
+ *   invoked.. The function may:
+ *   - return `true`, in which case no change is made to the `EmailData` result and it is returned to the user as is,
+ *   - return `false`, in which case a generic "result validation failed" message is added to the `EmailData` `issues`
+ *     and the original `EmailData` is returned to the user,
+ *   - return a string, in which case the string is appended to the `EmailData` `issues` field and the original
+ *     `EmailData` is returned to the user,
+ *   - modify the `EmailData` argument directly and either return it or return 'undefined `, which are equivalent and
+ *     will result in the input `EmailData` being returned as the function result; in this case, if there is an issue
+ *     `EmailData` `isValid` should be set false and an issue appended; if the validation function is overriding an
+ *     originally invalid result, then `isValid` should be set true and the `issues` truncated,
+ *   - create a new `EmailData` result object and return it; here again, the `validateResult` function is responsible
+ *     for setting `isValid` and updating `issues` according to the results of the validation.
  * @returns {EmailData} The results of the validation.
  */
 const validateEmail = function (input, {
