@@ -105,19 +105,19 @@ import { validTLDs } from './valid-tlds'
  *   result off all other build in validations and any `validateInput` result (`validateResult` is the last check
  *   performed). If the input was not recognized as an email address to begin with, then `validateResult` is not
  *   invoked.. The function may:
- *   - return `true`, in which case no change is made to the `EmailData` result and it is returned to the user as is,
- *   - return `false`, in which case a generic "result validation failed" message is added to the `EmailData` `issues`
+ *   1) return `true`, in which case no change is made to the `EmailData` result and it is returned to the user as is,
+ *   2) return `false`, in which case a generic "result validation failed" message is added to the `EmailData` `issues`
  *     and the original `EmailData` is returned to the user,
- *   - return a string, in which case the string is appended to the `EmailData` `issues` field and the original
+ *   3) return a string, in which case the string is appended to the `EmailData` `issues` field and the original
  *     `EmailData` is returned to the user,
- *   - modify the `EmailData` argument directly and either return it or return 'undefined `, which are equivalent and
+ *   4) modify the `EmailData` argument directly and either return it or return 'undefined `, which are equivalent and
  *     will result in the input `EmailData` being returned as the function result; in this case, if there is an issue
  *     `EmailData` `isValid` should be set false and an issue appended; if the validation function is overriding an
  *     originally invalid result, then `isValid` should be set true and the `issues` truncated,
- *   - create a new `EmailData` result object and return it; here again, the `validateResult` function is responsible
+ *   5) create a new `EmailData` result object and return it; here again, the `validateResult` function is responsible
  *     for setting `isValid` and updating `issues` according to the results of the validation.
  * @returns {EmailData} The results of the validation.
- */
+ */ // Note, the  '1)', '2)', etc. above will be in-lined and won't show up as a list
 const validateEmail = function (input, {
   allowComments = this?.allowComments || false,
   allowAnyDomain = this?.allowAnyDomain || false,
