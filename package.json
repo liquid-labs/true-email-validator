@@ -47,7 +47,7 @@
     "jsdoc-to-markdown": "^8.0.3"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.7.0",
     "punycode": "^2.3.1",
     "regex-repo": "^4.0.1"
   },
