@@ -138,11 +138,10 @@ const validateEmail = function (input, {
   const { root: addrSpec, isPartial } = parseResult
   if (addrSpec === undefined) {
     return { isValid : false, issues : ['not recognized as a valid email address'] }
-  }
-  else if (isPartial === true) {
-    return { 
-      isValid : false, 
-      issues : ["parsed as a 'partial' address; perhaps you need double quotes (\") around the username (local part)"]
+  } else if (isPartial === true) {
+    return {
+      isValid : false,
+      issues  : ["parsed as a 'partial' address; perhaps you need double quotes (\") around the username (local part)"]
     }
   }
   // else
