@@ -108,7 +108,7 @@ Options can be explicitly defined to allow for a more liberal or restrictive val
 **Returns**: [`EmailData`](#EmailData) - The results of the validation.
 
 
-[**Source code**](./src/lib/validate-email.mjs#L108)
+[**Source code**](./src/lib/validate-email.mjs#L110)
 
 <a id="EmailData"></a>
 ### `EmailData` : `object`
@@ -121,8 +121,9 @@ Email address parts and validation data.
 | Name | Type | Description |
 | --- | --- | --- |
 | isValid | `boolean` | True if the input is a valid email address according to the options. |
+| address | `string` | The normalized email address. The domain portion, if any, will always be in lowercase (   the `domain` property will preserve the original case). |
 | username | `string` | The username or local part of the email address. |
-| domain | `string` \| `undefined` | The domain value, if present. Exactly one of `domain` and `domainLiteral` will   always be defined for a syntactically valid email address. |
+| domain | `string` \| `undefined` | The domain value, if present. Exactly one of `domain` and `domainLiteral` will   always be defined for a syntactically valid email address. The original case of the domain is preserved. |
 | domainLiteral | `string` \| `undefined` | The domain literal value, if present. Exactly one of `domain` and   `domainLiteral` will always be defined for a syntactically valid email address. |
 | issues | `Array.<string>` | Lists the issues, if any, rendering the email invalid according to the effective   validation options. At least one issue _should_ be present if `isValid` is false and the array _should_ be empty   if `isValid` is true. This is guaranteed for the built in validation checks, but `validateResult` checks can cause   a violation of this norm if the validation function is not correctly implemented. |
 | commentLocalPartPrefix | `string` \| `undefined` | The embedded comment, if any, immediately before the address   username (local part). |
