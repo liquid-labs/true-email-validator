@@ -89,6 +89,8 @@ import { validTLDs } from './valid-tlds'
  *   are known to have more restrictive policies regarding what is and is not a valid email address.
  * @param {boolean} options.noLengthCheck - If true, then skips username (local part) and total email address length
  *   restrictions. Note that domain name label lengths are still enforced.
+ * @param {boolean} options.noPlusEmails - If true, then '+' is not allowed in the username/local part. This is
+ *   equivalent to setting `excludeChars = '+'.`
  * @param {boolean} options.noTLDOnly - If true, then disallows TLD only domains in an address like 'john@com'.
  * @param {boolean} options.noNonASCIILocalPart - If true, then disallows non-ASCII/international characters in the
  *   username/local part of the address.
@@ -121,6 +123,7 @@ const validateEmail = function (input, {
   excludeDomains = this?.excludeDomains || [],
   noDomainSpecificValidation = this?.noDomainSpecificValidation || false,
   noLengthCheck = this?.noLengthCheck || false,
+  noPlusEmails = this?.noPlusEmails || false,
   noTLDOnly = this?.noTLDOnly || false,
   noNonASCIILocalPart = this?.noNonASCIILocalPart || false,
   validateInput = this?.validateInput,
@@ -257,11 +260,14 @@ const validateEmail = function (input, {
   if (allowQuotedLocalPart !== true && username.startsWith('"')) {
     issues.push('uses disallowed quoted username/local part')
   }
-  if (excludeChars?.length > 0) {
+  if (excludeChars?.length > 0 || noPlusEmails === true) {
     excludeChars = typeof excludeChars === 'string' ? excludeChars.split('') : excludeChars
+    if (noPlusEmails === true) {
+      excludeChars.push('+')
+    }
     for (const char of excludeChars) {
       if (username.includes(char)) {
-        issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}'`)
+        issues.push(`contains excluded character ${char.length > 1 ? 'sequence ' : ''}'${char}' in username`)
       }
     }
   }

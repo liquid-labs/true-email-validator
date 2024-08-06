@@ -100,6 +100,7 @@ Options can be explicitly defined to allow for a more liberal or restrictive val
 | options.excludeDomains | `boolean` | An array of domains to exclude. Excluding a domain also excludes all   subdomains so eclxuding 'foo.com' would exclude 'john@foo.com' and 'john@bar.foo.com'. Initial periods are ignored   so `excludeDomains: ['com']', and `excludeDomains: ['.com']` are equivalent. |
 | options.noDomainSpecificValidation | `boolean` | Setting this to true will skip domain specific validations. By   default, the validation includes domain specific checks for 'google.com' and 'hotmail.com' domains. These domains   are known to have more restrictive policies regarding what is and is not a valid email address. |
 | options.noLengthCheck | `boolean` | If true, then skips username (local part) and total email address length   restrictions. Note that domain name label lengths are still enforced. |
+| options.noPlusEmails | `boolean` | If true, then '+' is not allowed in the username/local part. This is   equivalent to setting `excludeChars = '+'.` |
 | options.noTLDOnly | `boolean` | If true, then disallows TLD only domains in an address like 'john@com'. |
 | options.noNonASCIILocalPart | `boolean` | If true, then disallows non-ASCII/international characters in the   username/local part of the address. |
 | options.validateInput | `function` | A function to perform additional, arbitrary validation on a syntactically   valid input string. This function is provided mainly to support input validation libraries where the input is not   recoverable from the processed value. In general, users should prefer `validateResult`. The result of   `validateInput` should be either `true` or a string describing the issue. Any value other than literal `true` is   treated as invalidating the input and a generic message is provided if the return value is not a string. |
@@ -108,7 +109,7 @@ Options can be explicitly defined to allow for a more liberal or restrictive val
 **Returns**: [`EmailData`](#EmailData) - The results of the validation.
 
 
-[**Source code**](./src/lib/validate-email.mjs#L110)
+[**Source code**](./src/lib/validate-email.mjs#L112)
 
 <a id="EmailData"></a>
 ### `EmailData` : `object`
