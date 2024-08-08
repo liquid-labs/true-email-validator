@@ -73,10 +73,10 @@ import { validTLDs } from './valid-tlds'
  *  `allowLocahost`.`
  * @param {boolean} options.allowLocalhost - Allows `localhost` domain value or (when `allowIPV6` and/or `allowIPV4`
  *   also set true) loopback IP addresses.
- * @param {boolean} options.allowedTLDs - By default, the TLD portion of a domain name will be validated against known
- *   good TLDs. To limit this list or use an updated list, set this value to an array of acceptable TLDs or a map with
- *   valid TLD keys (the value is not used). You can use the `getLatestTLDs`, also exported by this package, to get an
- *   object defining the most current TLDs as registered with ICANN. See `arbitraryTLDs`.
+ * @param {object<string,true>} options.allowedTLDs - By default, the TLD portion of a domain name will be validated 
+ *   against known good TLDs. To limit this list or use an updated list, set this value to an array of acceptable TLDs 
+ *   or a map with valid TLD keys (the value is not used). You can use the `getLatestTLDs`, also exported by this 
+ *   package, to get an object defining the most current TLDs as registered with ICANN. See `arbitraryTLDs`.
  * @param {boolean} options.allowQuotedLocalPart - Overrides default restriction and allows quoted username/local parts.
  * @param {boolean} options.arbitraryTLDs - Skips the 'known TLD' check and allows any validly formatted TLD name. This
  *   is still restricted by the TLD name restrictions which are tighter than standard domain labels.
